@@ -86,7 +86,7 @@ def process_update():
         # Generate the image, then send it
         game_record.generate_leaderboard_img(current_season, os.environ.get("JPG_FILE_NAME"))
         # Send image
-        payload = {'chat_id': '-630156531'}
+        payload = {'chat_id': os.environ.get('CHAT_ID')}
         files = {'photo': open('latest_season.jpg', 'rb')}
         requests.post(f"{os.environ.get('BOT_URL')}/sendPhoto", files=files, data=payload ).text
 
