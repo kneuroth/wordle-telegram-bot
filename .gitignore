@@ -156,3 +156,4 @@ seasons/*
 season_templates/*
 import/
 .vscode
+*.jpg
