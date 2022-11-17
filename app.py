@@ -84,7 +84,7 @@ def process_update():
     # Check if everyone has submitted
     if current_season.all_submitted_on(datetime.date.today()):
         # Generate the image, then send it
-        game_record.generate_leaderboard_img(current_season, "latest_season")
+        game_record.generate_leaderboard_img(current_season, os.environ.get("JPG_FILE_NAME"))
         # Send image
         payload = {'chat_id': '-630156531'}
         files = {'photo': open('latest_season.jpg', 'rb')}
