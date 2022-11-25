@@ -7,7 +7,7 @@ def extract_update_fields(update: dict) -> dict:
     """Returns all needed fields to process the message, assumes update has text"""
     return {
         "update_id": update["update_id"], # Probably will not need this
-        "chat_id" : update["message"]["chat"]["id"],
+        "chat_id" : str(update["message"]["chat"]["id"]),
         "chat_name": update["message"]["chat"]["title"],
         "date": str(date.fromtimestamp(update["message"]["date"])),
         "name": update["message"]["from"]["first_name"],

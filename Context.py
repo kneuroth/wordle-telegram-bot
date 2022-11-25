@@ -7,3 +7,4 @@ def get_wordle_number(date):
     delta = int(re.split(' days|:| day,', str(date - datetime.date(2022, 11, 6)))[0])
     return delta + 505
     #return datetime.date.today - date
+

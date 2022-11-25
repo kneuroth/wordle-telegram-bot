@@ -253,6 +253,22 @@ class GameRecord:
                 if row[date_index] == str(date):
                     return row
             return False
+
+        def insert_wordle(self, wordle, date: datetime.date):
+            date_index = self.data["headers"].index("date")
+            wordle_index = self.data["headers"].index("word")
+            min_date = self.str_to_date(self.data["rows"][0][date_index])
+            max_date = self.str_to_date(self.data["rows"][len(self.data["rows"]) - 1][date_index])
+
+            closer_to_min = (date - min_date) < (max_date - date)
+
+            row_iterator = self.data["rows"] if closer_to_min else reversed(self.data["rows"])
+            for row in row_iterator:
+                if row[date_index] == str(date):
+                    print("Found the shit")
+                    row[wordle_index] = wordle
+                    break
+            self.updated = True
             
 
         #TODO: Re write this entire thing so data["rows"] is a key/value pair so inserting is a lot faster??

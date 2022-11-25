@@ -1,0 +1,38 @@
+{
+    "update_id": 570518484,
+    "message": {
+        "message_id": 122,
+        "from": {
+            "id": 32420099,
+            "is_bot": "False",
+            "first_name": "Kelly",
+            "username": "keIIyN",
+            "language_code": "en"
+        },
+        "chat": {
+            "id": -630156531,
+            "title": "test group",
+            "type": "group",
+            "all_members_are_administrators": "True"
+        },
+        "date": 1669341102,
+        "reply_to_message": {
+            "message_id": 121,
+            "from": {
+                "id": 5241641979,
+                "is_bot": "True",
+                "first_name": "wordle_score",
+                "username": "wordle_score_bot"
+            },
+            "chat": {
+                "id": -630156531,
+                "title": "test group",
+                "type": "group",
+                "all_members_are_administrators": "True"
+            },
+            "date": 1669341064,
+            "text": "wateve "
+        },
+        "text": "test"
+    }
+}

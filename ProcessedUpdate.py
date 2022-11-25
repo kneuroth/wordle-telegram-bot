@@ -3,6 +3,7 @@ from datetime import datetime
 from tkinter import SEL
 from extraction import extract_wordle_number, extract_update_fields, extract_wordle_score
 import Context
+import os
 
 
 class ProcessedUpdate:
@@ -30,8 +31,9 @@ class ProcessedUpdate:
     def __init__(self, update: dict):
         #TODO: list all self.attributes and assign defaults
         self.return_message = "This is an update "
+        self.raw_update = update
         self.update_id = ""
-        self.chat_id = ""
+        self.chat_id = 0
         self.chat_name = ""
         self.date = ""
         self.name = ""
@@ -46,7 +48,7 @@ class ProcessedUpdate:
                 self.return_message = self.return_message + "from the correct groupchat "
                 # Clean update for ease of use, see fields in extraction.py/extract_update_fields()
                 mod_update = extract_update_fields(update)
-                self.udpate_id = mod_update['update_id']
+                self.update_id = mod_update['update_id']
                 self.chat_id = mod_update['chat_id']
                 self.chat_name = mod_update['chat_name']
                 self.date = mod_update['date']
@@ -73,10 +75,13 @@ class ProcessedUpdate:
     def is_response_ok(response):
         return response["ok"]
 
+    def is_reply_to(self, message_id):
+        return "message" in self.raw_update and "reply_to_message" in self.raw_update['message'] and str(self.raw_update['message']['reply_to_message']['message_id']) == message_id
+
     def is_from_groupchat(self, update):
         """Only accepts message if it chat type is group, assumes message is text message"""
         #TODO: Also should check groupchat ID based on a config file or env variable
-        return "chat" in update['message'] and update['message']['chat']['type'] == 'group'
+        return "chat" in update['message'] and update['message']['chat']['type'] == 'group' and str(update['message']['chat']['id']) == os.environ.get('CHAT_ID')
 
     def is_text_message_update(self, update):
         """Only accepts message type updates with text (not edits)"""
@@ -84,7 +89,6 @@ class ProcessedUpdate:
 
     def is_todays_wordle(self):
         return_message_tail = "but it does not contain a correctly formatted wordle "
-        print("hello")
         if self.is_wordle_message():
             today = datetime.today().strftime("%Y-%m-%d")
             return_message_tail = f"but it was sent on {self.date} and today is {today} "

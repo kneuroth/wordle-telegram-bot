@@ -2,7 +2,7 @@
  
 TODO when deploying:
 
-Update .env
+Copy template.env to .env and insert values
 
 Load seasons/
 
