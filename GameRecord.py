@@ -10,6 +10,8 @@ import os
 
 from dotenv import load_dotenv
 
+import Context
+
 load_dotenv()
 
 class GameRecord:
@@ -256,6 +258,7 @@ class GameRecord:
 
         def insert_wordle(self, wordle, date: datetime.date):
             date_index = self.data["headers"].index("date")
+            wordle_number_index = self.data["headers"].index("wordle_num")
             wordle_index = self.data["headers"].index("word")
             min_date = self.str_to_date(self.data["rows"][0][date_index])
             max_date = self.str_to_date(self.data["rows"][len(self.data["rows"]) - 1][date_index])
@@ -265,8 +268,8 @@ class GameRecord:
             row_iterator = self.data["rows"] if closer_to_min else reversed(self.data["rows"])
             for row in row_iterator:
                 if row[date_index] == str(date):
-                    print("Found the shit")
                     row[wordle_index] = wordle
+                    row[wordle_number_index] = Context.get_wordle_number(datetime.date.today())
                     break
             self.updated = True
             
