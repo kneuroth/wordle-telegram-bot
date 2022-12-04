@@ -17,12 +17,25 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+from ScheduledFunctions import record_todays_wordle
+
 # Create a game record, which inits using json file (maybe) and generates season json
 # files (maybe) and season config json files
 
 app = Flask(__name__)
 
 game_record = GameRecord()
+
+@app.get("/record_wordle")
+def record_wordle():
+    return record_todays_wordle()
+    
+
+
+@app.get("/send_dayend_scoreboard")
+def send_scoreboard():
+    # Assumes the day is over, finds the day's wordle, assigns 8s for unsubmitted players, and sends the scorebord 
+    pass
 
 @app.get("/current_season")
 def current_season():
