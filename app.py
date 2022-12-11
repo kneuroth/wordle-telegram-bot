@@ -32,10 +32,19 @@ def record_wordle():
     
 
 
-@app.get("/send_dayend_scoreboard")
+@app.get("/day_end")
 def send_scoreboard():
     # Assumes the day is over, finds the day's wordle, assigns 8s for unsubmitted players, and sends the scorebord 
-    pass
+    word = Context.get_todays_wordle()
+    game_record.get_current_season().insert_wordle(word, datetime.date.today())
+    game_record.close_day()
+    game_record.write_seasons()
+
+    game_record.generate_leaderboard_img(current_season, os.environ.get("JPG_FILE_NAME"))
+    # Send image
+    payload = {'chat_id': os.environ.get('CHAT_ID')}
+    files = {'photo': open('latest_season.jpg', 'rb')}
+    requests.post(f"{os.environ.get('BOT_URL')}/sendPhoto", files=files, data=payload )
 
 @app.get("/current_season")
 def current_season():
@@ -55,14 +64,7 @@ def test_update():
 
 @app.get("/test_general")
 def test_general():
-    headers = {
-                    "X-RapidAPI-Key": os.environ.get('WORDLE_ANSWER_API_KEY'),
-                    "X-RapidAPI-Host": os.environ.get('WORDLE_ANSWER_API_HOST')
-                }
-    word = requests.get(f"{os.environ.get('WORDLE_ANSWER_API_URL')}/today", headers=headers).json()["today"]
-    game_record.get_current_season().insert_wordle(word, datetime.date.today())
-    game_record.write_seasons()
-    return "K"
+    return Context.get_todays_wordle()
 
 @app.post("/")
 def process_update():
@@ -104,17 +106,10 @@ def process_update():
         if current_season.all_submitted_on(today):
 
             # Make sure the day hasnt changed since getting the request
-            if datetime.date.today() == today:
-                headers = {
-                    "X-RapidAPI-Key": os.environ.get('WORDLE_ANSWER_API_KEY'),
-                    "X-RapidAPI-Host": os.environ.get('WORDLE_ANSWER_API_HOST')
-                }
-                word = requests.get(f"{os.environ.get('WORDLE_ANSWER_API_URL')}/today", headers=headers).json()["today"]
-                game_record.get_current_season().insert_wordle(word, datetime.date.today())
-                game_record.write_seasons()
-            else:
-                # Ask for help
-                pass
+            word = Context.get_todays_wordle()
+            game_record.get_current_season().insert_wordle(word, datetime.date.today())
+            game_record.write_seasons()
+            
             
             game_record.generate_leaderboard_img(current_season, os.environ.get("JPG_FILE_NAME"))
             # Send image
@@ -128,11 +123,11 @@ def process_update():
     elif processed_update.chat_id == os.environ.get("CHAT_ID") and processed_update.is_reply_to('153'):
 
         payload = {'chat_id': os.environ.get('CHAT_ID'), 'text': str(update)}
-        print(requests.post(f"{os.environ.get('BOT_URL')}/sendMessage", data=payload).json()['result']['message_id'])
+        #print(requests.post(f"{os.environ.get('BOT_URL')}/sendMessage", data=payload).json()['result']['message_id'])
         return str(vars(processed_update))
 
     else:
-        return ""
+        return "" 
 
 
 
@@ -140,4 +135,3 @@ def process_update():
 
     #return leaderboard_html
 
-  

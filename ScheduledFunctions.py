@@ -21,3 +21,4 @@ def record_todays_wordle():
         wordle_map_file.write(json.dumps(wordle_map))
 
     return json.dumps(wordle_map)
+

@@ -157,3 +157,4 @@ season_templates/*
 import/
 .vscode
 latest_season.jpg
+wordlemap.json

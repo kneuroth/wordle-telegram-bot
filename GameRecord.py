@@ -64,6 +64,9 @@ class GameRecord:
 
         #self.write_seasons()
 
+    def close_day(self, date: datetime.date):
+        self.get_current_season().close_day()
+
     def insert_score(self, season, player, score, date: datetime.date):
         season.insert_score(player, score, date)
         self.write_seasons()
@@ -207,6 +210,18 @@ class GameRecord:
         def get_data_json(self):
             with open(self.data_path) as json_data:
                 return json.load(json_data)
+
+        def close_day(self, date: datetime.date):
+            if not self.all_submitted_on(date):
+                row = self.get_row_by_date(date)
+
+                # If any item ( after date, wordle_num, and word col aka names col) in specified date row
+                # is empty then return false - Not everyone has submitted, otherwise return true - everyone has submitted
+                for item in row[3:]:
+                    if item == "":
+                        self.insert_score
+
+
 
 
         def is_season_finished(self):
