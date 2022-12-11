@@ -1,6 +1,5 @@
 import re
 from datetime import datetime
-from tkinter import SEL
 from extraction import extract_wordle_number, extract_update_fields, extract_wordle_score
 import Context
 import os
