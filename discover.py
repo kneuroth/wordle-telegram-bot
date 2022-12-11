@@ -18,3 +18,4 @@ def process_update():
     processed_update  = ProcessedUpdate(update)
 
     print(vars(process_update))
+    return "Welcome to the app"
