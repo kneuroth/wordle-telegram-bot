@@ -2,6 +2,9 @@ from functools import partial, reduce
 import imgkit #Must install wkhtmltopdf to work https://wkhtmltopdf.org/downloads.html, add bin location to path
 #'''> C:\Users\kelly\miniconda3\envs\wordle-telegram-bot\Scripts\pip3 install imgkit'''
 
+path_wkthmltoimage = "C:\Program Files\wkhtmltopdf\bin\wkhtmltoimage.exe"
+config = imgkit.config(wkhtmltoimage=path_wkthmltoimage)
+
 import datetime
 
 import json
@@ -342,7 +345,7 @@ class GameRecord:
             </div>
             '''
             print("imgkit working:")
-            imgkit.from_string(html_string, f'{file_name}.jpg', css=css)
+            imgkit.from_string(html_string, f'{file_name}.jpg', css=css, config=config)
             return html_string
 
         def generate_header_html_string(self):

@@ -69,6 +69,8 @@ def test_general():
 @app.post("/")
 def process_update():
 
+    print(request.json)
+
     # TODO: (Future updates) Use this logic to determine tile colours
     # print(type(data))
     # string = data['message']['text']
