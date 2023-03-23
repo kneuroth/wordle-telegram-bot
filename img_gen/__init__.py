@@ -1,0 +1,1 @@
+from .image_generation import generate_scoreboard_image
