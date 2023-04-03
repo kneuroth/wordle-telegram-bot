@@ -49,6 +49,9 @@ Import requests json into Postman to test is_valid_signup_message and is_valid_s
 
 >Use the setWebhook method to define the webhook URL and to set up a filter for allowed updates
 >Eg. `https://api.telegram.org/bot123456:ACB-DEF1234ghlk-CQ/setWebhook`
+>
 >body:
+>
 >allowed_updates: ["message"]
+>
 >url: http://url-of-flask-app.com
