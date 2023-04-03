@@ -91,4 +91,4 @@ def generate_scoreboard_image(database, season_id):
     """
     css = ['body {background:red;}','table {width:100%}', 'td {text-align: center;}', 'tr {height:30px}']
 
-    return hti.screenshot(html_str=html, css_str=css, save_as='scoreboard.png', size=(800,1000))[0]
+    return hti.screenshot(html_str=html, css_str=css, save_as='scoreboard.png', size=(800, 1050))[0]

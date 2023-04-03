@@ -1,7 +1,11 @@
 import unittest
 import datetime
 import os
+
 from dotenv import load_dotenv
+
+import random
+import string
 
 project_path = os.path.abspath(os.path.dirname(__file__))
 parent_path = os.path.abspath(os.path.join(project_path, os.pardir))
@@ -13,8 +17,6 @@ from context import get_wordle_number, get_wordle
 from img_gen import generate_scoreboard_image
 
 from dbio import create_tables, drop_tables, insert_wordle_game, insert_player, insert_season, insert_wordle_day, insert_player_score,get_record, get_season_by_date, get_max_season, update_record, get_non_submittors, get_season_scoreboard, get_season_winners
-
-from img_gen import generate_scoreboard_image
 
 from send_message import send_message, send_image
 
@@ -44,20 +46,13 @@ class TestContext(unittest.TestCase):
         print(f"Today's wordle is {result}")
         self.assertNotEqual('?????', result)
 
-#class TestImgGen(unittest.TestCase):
-    #def test_generate_scoreboard_image(self):
-        # Doesn't actually run a true test but still generates a sample scoreboard
-        # image. Test by viewing the image
-        #self.assertEqual([f"{parent_path}/scoreboard.png"], generate_scoreboard_image())
-
-
 class TestSendMessage(unittest.TestCase):
     def test_send_message(self):
         # See if received a text
         send_message("Test")
 
-    def test_send_image(self):
-        send_image('scoreboard.png')
+    #def test_send_image(self):
+        #send_image('scoreboard.png')
 
 class TestDBIO(unittest.TestCase):
     def setUp(self):
@@ -216,7 +211,7 @@ class TestDBIO(unittest.TestCase):
             for player in [player1, player2, player3]:
                 insert_player_score(database, player[0], wordle_day[0], player[0])
 
-        self.assertEqual(['Player 3'], get_season_winners(database, 1))
+        self.assertEqual(['Player 1'], get_season_winners(database, 1))
 
     def test_get_season_winner_3_way_tie(self):
         # Create players to test with
@@ -245,6 +240,47 @@ class TestDBIO(unittest.TestCase):
                 insert_player_score(database, 3, wordle_day[0], player[0])
 
         self.assertEqual(['Player 1', 'Player 2', 'Player 3'], get_season_winners(database, 1))
+
+class TestImgGen(unittest.TestCase):
+    def setUp(self):
+        # Runs before each test case
+        create_tables(database)
+
+    def tearDown(self):
+        # Runs after each test case
+        drop_tables(database)
+        os.remove(database)
+
+    def test_generate_scoreboard_image(self):
+        # Doesn't actually run a true test but still generates a sample scoreboard
+        # image. Test by viewing the image
+
+        wordle_game = insert_wordle_game(database, 1)
+
+        wordle_game_id = wordle_game[0]
+        players = []
+        for i in range(6):
+            player = insert_player(database, i, f'Wordler {i}', wordle_game_id)
+            players.append(player)
+
+        today = datetime.date.today()
+
+        season_length = 30
+
+        season1 = insert_season(database, 1, today, today + datetime.timedelta(days=season_length), 1)
+
+        for i in range(season_length):
+            wordle_day = insert_wordle_day(database, ("").join(random.choices(string.ascii_uppercase, k=5)), 100 + i, today + datetime.timedelta(days=i), 1)
+            for player in players:
+                insert_player_score(database, random.choice([1, 2, 3, 4, 5, 6, 7, 8]), wordle_day[0], player[0])
+
+        scoreboard_path = generate_scoreboard_image(database, 1)
+
+        send_image(scoreboard_path)
+        
+        send_message(f"Congrats to {' and '.join(get_season_winners(database, 1))}! You won")
+
+        #self.assertEqual(f"{parent_path}/scoreboard.png", scoreboard_path)
 
 
 if __name__ == '__main__':

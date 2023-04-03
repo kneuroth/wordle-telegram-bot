@@ -233,7 +233,22 @@ def get_non_submittors(database: str, wordle_day_id: int):
 
 def get_season_winners(database: str, season_id: int):
     # Retuns all players (player name strings) who have the highest score, you will have to check if the season is over
-    return [player[1] for player in query_many(database, f"SELECT * FROM players WHERE id IN (SELECT player_id FROM player_scores WHERE score=(SELECT MAX(score) FROM player_scores WHERE wordle_day_id IN(SELECT id FROM wordle_days WHERE season_id={season_id})))")[0]]
+    
+    # Returns a list of tuples (player_name, score) where score is their total score
+    player_scores = query_many(database, f"SELECT name, totals.score FROM players, (SELECT player_id, SUM(score) as score FROM player_scores WHERE wordle_day_id IN (SELECT id FROM wordle_days WHERE season_id={season_id}) GROUP BY player_id) as totals WHERE totals.player_id=id")[0]
+
+    min = 9999
+    winners = []
+
+    for player, score in player_scores:
+        if score < min:
+            min = score
+    
+    for player, score in player_scores:
+        if score == min:
+            winners.append(player)
+    
+    return winners
 
 if __name__ == "__main__":
     pass

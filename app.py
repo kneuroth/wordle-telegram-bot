@@ -95,7 +95,7 @@ def receive_update():
                 new_season_num = latest_season[4] + 1
 
             # Create a new season
-            season_record = insert_season(database, new_season_num, today, today + datetime.timedelta(days=season_length), wordle_game_id)
+            season_record = insert_season(database, new_season_num, today, today + datetime.timedelta(days=int(season_length)), wordle_game_id)
             
         season_id = season_record[0]
 
@@ -163,7 +163,7 @@ def day_end():
             new_season_num = latest_season[4] + 1
 
         # Create a new season
-        yesterday_season_record = insert_season(database, new_season_num, yesterday, yesterday + datetime.timedelta(days=season_length), wordle_game_id)
+        yesterday_season_record = insert_season(database, new_season_num, yesterday, yesterday + datetime.timedelta(days=int(season_length)), wordle_game_id)
 
     yesterday_season_id = yesterday_season_record[1]
 
