@@ -22,7 +22,6 @@ In project root directory run:
 ### Development
 
 
-
 ### Testing
 
 **ENV** will be an environment variable in a .env file. Options are *DEV*, *TEST*, and *PROD*.
@@ -55,3 +54,11 @@ Import requests json into Postman to test is_valid_signup_message and is_valid_s
 >allowed_updates: ["message"]
 >
 >url: http://url-of-flask-app.com
+
+
+### Running with docker
+
+
+docker build -t wordle_bot .
+
+docker run --rm --name wordle_bot_container -p 5000:5000 wordle_bot

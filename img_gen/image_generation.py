@@ -13,30 +13,7 @@ def get_total_scores(data):
 
     return sums
 
-
-def generate_scoreboard_image(database, season_id):
-    """
-    Generate the PNG image of the wordle scoreboard
-
-    Parameters
-    ----------
-    season_id: int
-        Unique season identifier
-
-    Returns
-    -------
-    String
-        Returns a list containing the path to the scoreboard image that was generated
-
-    Raises
-    ------
-    None
-
-    Notes
-    -----
-    None
-    """
-    hti = Html2Image()
+def get_scoreboard_html_and_css(database, season_id):
 
     data, headers = get_season_scoreboard(database, season_id) 
 
@@ -90,5 +67,34 @@ def generate_scoreboard_image(database, season_id):
 </html>
     """
     css = ['body {background:red;}','table {width:100%}', 'td {text-align: center;}', 'tr {height:30px}']
+
+    return (html, css)
+
+
+def generate_scoreboard_image(database, season_id):
+    """
+    Generate the PNG image of the wordle scoreboard
+
+    Parameters
+    ----------
+    season_id: int
+        Unique season identifier
+
+    Returns
+    -------
+    String
+        Returns a list containing the path to the scoreboard image that was generated
+
+    Raises
+    ------
+    None
+
+    Notes
+    -----
+    None
+    """
+    hti = Html2Image()
+    
+    html, css = get_scoreboard_html_and_css(database, season_id)
 
     return hti.screenshot(html_str=html, css_str=css, save_as='scoreboard.png', size=(800, 1050))[0]

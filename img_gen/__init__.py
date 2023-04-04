@@ -1,1 +1,1 @@
-from .image_generation import generate_scoreboard_image
+from .image_generation import generate_scoreboard_image, get_scoreboard_html_and_css

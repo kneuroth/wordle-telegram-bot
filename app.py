@@ -13,7 +13,7 @@ from dbio import get_season_by_date, get_max_season, get_non_submittors, get_sea
 
 from send_message import send_image, send_message
 
-from img_gen import generate_scoreboard_image
+from img_gen import generate_scoreboard_image, get_scoreboard_html_and_css
 
 app = Flask(__name__)
 
@@ -57,6 +57,15 @@ if wordle_game_record == None:
     wordle_game_record = insert_wordle_game(database, int(os.getenv("CHAT_ID")))
 
 wordle_game_id = wordle_game_record[0]
+
+@app.get("/")
+def main_page():
+    latest_season = get_max_season(database, wordle_game_id)
+    if latest_season != None:
+        # There is a latest season so return the scoreboard for that season
+        return get_scoreboard_html_and_css(database, latest_season[0])[0]
+    else:
+        return "No seasons yet!"
 
 @app.post("/")
 def receive_update():
@@ -111,6 +120,7 @@ def receive_update():
         player_score_record = get_record(database, 'player_scores', ['wordle_day_id', 'player_id'], [wordle_day_id, player_id])
         if player_score_record == None:
             player_score_record = insert_player_score(database, score, wordle_day_id, player_id)
+
         else:
             # There already exists a player_score entry, you can't override your submission
             # TODO: Send message saying you can't do that
