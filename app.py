@@ -9,7 +9,7 @@ from validation.update_validation import is_valid_score_submission ,is_valid_sig
 from context import get_wordle_number, get_wordle
 
 from dbio import create_tables, get_record, insert_wordle_game, insert_player, insert_season, insert_wordle_day, insert_player_score, update_record
-from dbio import get_season_by_date, get_max_season, get_non_submittors, get_season_winners
+from dbio import is_first_day_of_season, get_season_by_date, get_max_season, get_non_submittors, get_season_winners
 
 from send_message import send_image, send_message
 
@@ -133,13 +133,13 @@ def receive_update():
         non_submittors = get_non_submittors(database, wordle_day_id)
         if non_submittors == []:
             # Everyone has submitted
-            send_image(generate_scoreboard_image(database, season_id))            
+            if not is_first_day_of_season(database, season_id, today):
+                send_image(generate_scoreboard_image(database, season_id))            
 
             if datetime.date.today() == get_record(database, 'seasons', ['id'], [season_id])[3]:
                 # Today is the last day in the season
                 send_message(f"Congrats on winning, {' and '.join(get_season_winners(database, season_id))}")
 
-        #print(request.json)
     elif is_valid_signup_message(request.json):
         player_id = request.json["message"]["from"]["id"]
         player_name = request.json["message"]["from"]["first_name"]

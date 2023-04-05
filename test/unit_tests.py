@@ -16,7 +16,7 @@ from context import get_wordle_number, get_wordle
 
 from img_gen import generate_scoreboard_image
 
-from dbio import create_tables, drop_tables, insert_wordle_game, insert_player, insert_season, insert_wordle_day, insert_player_score,get_record, get_season_by_date, get_max_season, update_record, get_non_submittors, get_season_scoreboard, get_season_winners
+from dbio import create_tables, drop_tables, insert_wordle_game, insert_player, insert_season, insert_wordle_day, insert_player_score,get_record, is_first_day_of_season, get_season_by_date, get_max_season, update_record, get_non_submittors, get_season_scoreboard, get_season_winners
 
 from send_message import send_message, send_image
 
@@ -240,6 +240,27 @@ class TestDBIO(unittest.TestCase):
                 insert_player_score(database, 3, wordle_day[0], player[0])
 
         self.assertEqual(['Player 1', 'Player 2', 'Player 3'], get_season_winners(database, 1))
+
+    def test_is_first_day_of_season_true(self):
+        
+        today = datetime.date.today()
+
+        one_day_delta = datetime.timedelta(days=1)
+
+        season1 = insert_season(database, 1, today, today + one_day_delta, 1)
+
+        self.assertEqual(True, is_first_day_of_season(database, season1[0], today))
+    
+    def test_is_first_day_of_season_false(self):
+
+        today = datetime.date.today()
+
+        one_day_delta = datetime.timedelta(days=1)
+
+        season1 = insert_season(database, 1, today, today + one_day_delta, 1)
+
+        self.assertEqual(False, is_first_day_of_season(database, season1[0], today + one_day_delta))
+
 
 class TestImgGen(unittest.TestCase):
     def setUp(self):

@@ -178,6 +178,12 @@ def update_record(database: str, table_name: str, id_fields: list, id_values: li
 
 # -------SPECIALIZED QUERIES--------#
 
+def is_first_day_of_season(database, season_id, date):
+    start_date = query_one(database, f"""
+    SELECT start_date FROM seasons WHERE id={season_id}
+    """)[0]
+    return start_date == str(date)
+
 def get_season_scoreboard(database, season_id):
     # Returns tuple of (records, columns)
 
