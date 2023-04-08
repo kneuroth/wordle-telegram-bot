@@ -199,8 +199,7 @@ def get_season_scoreboard(database, season_id):
 
     """)[0]
 
-
-    return query_many(database, f"""
+    result = query_many(database, f"""
 
                         SELECT
                         date,
@@ -214,6 +213,8 @@ def get_season_scoreboard(database, season_id):
                         GROUP BY date, wordle_number, word
     
     """)
+
+    return result
 
                         # SELECT
                         # date,

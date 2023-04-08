@@ -58,6 +58,7 @@ Import requests json into Postman to test is_valid_signup_message and is_valid_s
 
 ### Running with docker
 
+Make sure you delete the database and scoreboard before building
 
 docker build -t wordle_bot .
 

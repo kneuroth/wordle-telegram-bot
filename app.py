@@ -133,7 +133,9 @@ def receive_update():
         non_submittors = get_non_submittors(database, wordle_day_id)
         if non_submittors == []:
             # Everyone has submitted
-            if not is_first_day_of_season(database, season_id, today):
+            is_first_day = is_first_day_of_season(database, season_id, today)
+
+            if not is_first_day:
                 send_image(generate_scoreboard_image(database, season_id))            
 
             if datetime.date.today() == get_record(database, 'seasons', ['id'], [season_id])[3]:
@@ -190,16 +192,20 @@ def day_end():
 
     # Check if everyone submitted yesterday
     non_submittors = get_non_submittors(database, yesterday_wordle_day_id)
-    if non_submittors == []:
-        # Everyone has submitted
-        send_image(generate_scoreboard_image(database, yesterday_season_id))
 
-        if yesterday == get_record(database, 'seasons', ['id'], [yesterday_season_id])[3]:
-            # Yesterday was the last day in the season
-            send_message(f"Congrats on winning, {' and '.join(get_season_winners(database, yesterday_season_id))}")
-    else:
-        # Insert non-submittors' player_scores with 8s 
-        for non_submittor in non_submittors:
-            insert_player_score(database, 8, yesterday_wordle_day_id, non_submittor[0])
+    for non_submittor in non_submittors:
+        insert_player_score(database, 8, yesterday_wordle_day_id, non_submittor[0])
+
+    # 8's have been suppled, now we can send the scoreboard
+    send_image(generate_scoreboard_image(database, yesterday_season_id))
+
+    if yesterday == get_record(database, 'seasons', ['id'], [yesterday_season_id])[3]:
+        # Yesterday was the last day in the season
+        send_message(f"Congrats on winning, {' and '.join(get_season_winners(database, yesterday_season_id))}")
+
+
+        
+            
+            
 
     return "End"

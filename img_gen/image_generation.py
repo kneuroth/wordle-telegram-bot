@@ -93,8 +93,11 @@ def generate_scoreboard_image(database, season_id):
     -----
     None
     """
-    hti = Html2Image()
+    hti = Html2Image(custom_flags=['--no-sandbox']) 
+    # Need --no-sandbox to run in docker container
     
     html, css = get_scoreboard_html_and_css(database, season_id)
 
-    return hti.screenshot(html_str=html, css_str=css, save_as='scoreboard.png', size=(800, 1050))[0]
+    path = hti.screenshot(html_str=html, css_str=css, save_as='scoreboard.png', size=(800, 1050))[0]
+
+    return path
