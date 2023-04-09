@@ -12,7 +12,7 @@ RUN apt-get install -y cron
 
 COPY . .
 
-RUN echo "*/5 * * * * /usr/bin/python3 /app/day_end_script.py >> /var/log/cron.log 2>&1" > /etc/cron.d/my-cron
+RUN echo "0 0 * * * /usr/bin/python3 /app/day_end_script.py >> /var/log/cron.log 2>&1" > /etc/cron.d/my-cron
 
 RUN chmod 0644 /etc/cron.d/my-cron
 
