@@ -27,7 +27,7 @@ if __name__ == "__main__":
     # app.py has ran already so assume tables exist but have nothing in them
     wordle_game_record = dbio.insert_wordle_game(database, int(os.getenv("CHAT_ID")))
 
-    season = dbio.insert_season(database, 1, today - datetime.timedelta(days=15), today + datetime.timedelta(days=14), 1)
+    season = dbio.insert_season(database, 1, today - datetime.timedelta(days=15), today, 1)
 
     geoffrey = dbio.insert_player(database, 45127117, 'Geoffrey', 1)
     kelly = dbio.insert_player(database, 32420099, 'Kelly', 1)

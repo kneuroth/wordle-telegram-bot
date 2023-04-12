@@ -261,6 +261,18 @@ class TestDBIO(unittest.TestCase):
 
         self.assertEqual(False, is_first_day_of_season(database, season1[0], today + one_day_delta))
 
+    def test_is_first_day_of_season_middle(self):
+
+        today = datetime.date.today()
+
+        one_day_delta = datetime.timedelta(days=1)
+        two_day_delta = datetime.timedelta(days=2)
+
+        season1 = insert_season(database, 1, today, today + two_day_delta, 1)
+
+        self.assertEqual(False, is_first_day_of_season(database, season1[0], today + one_day_delta))
+
+
 
 class TestImgGen(unittest.TestCase):
     def setUp(self):
