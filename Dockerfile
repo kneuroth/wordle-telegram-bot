@@ -18,4 +18,6 @@ RUN chmod 0644 /etc/cron.d/my-cron
 
 RUN crontab /etc/cron.d/my-cron
 
+RUN pip install gunicorn
+
 ENTRYPOINT ["/bin/bash", "/app/init.sh"]
