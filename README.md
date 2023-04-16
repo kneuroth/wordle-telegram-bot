@@ -60,7 +60,11 @@ Import requests json into Postman to test is_valid_signup_message and is_valid_s
 
 Make sure you delete the database and scoreboard before building
 
-docker build -t wordle_bot .
+docker build -t wordle_bot_image .
 
-docker run --rm --name wordle_bot_container -p 80:8000 wordle_bot
+docker run --rm --name wordle_bot_container -p 80:8000 wordle_bot_image --dev
+
+To run with https enabled on the Compute VM Instance run:
+
+docker run --rm --name wordle_bot_container -p 80:8000 wordle_bot_image --prod
 
