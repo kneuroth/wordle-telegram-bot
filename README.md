@@ -62,4 +62,5 @@ Make sure you delete the database and scoreboard before building
 
 docker build -t wordle_bot .
 
-docker run --rm --name wordle_bot_container -p 5000:5000 wordle_bot
+docker run --rm --name wordle_bot_container -p 80:8000 wordle_bot
+
