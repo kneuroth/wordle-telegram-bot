@@ -66,5 +66,5 @@ docker run --rm --name wordle_bot_container -p 80:8000 wordle_bot_image export E
 
 To run with https enabled on the Compute VM Instance run:
 
-docker run --rm --name wordle_bot_container -p 80:443 wordle_bot_image export ENVIRONMENT=prod
+docker run --rm --name wordle_bot_container -p 80:443 wordle_bot_image --env ENVIRONMENT=prod
 

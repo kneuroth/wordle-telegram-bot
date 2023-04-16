@@ -4,6 +4,8 @@ service cron start
 
 #python3 test_init.py
 
+echo $ENVIRONMENT
+
 if [ "$ENVIRONMENT" == "prod" ]; then
     echo "Running with https"
     gunicorn --certfile=/etc/letsencrypt/live/wordle-bot.kneubots.com/fullchain.pem  --keyfile=/etc/letsencrypt/live/wordle-bot.kneubots.com/privkey.pem --bind 0.0.0.0:443 app:app
