@@ -7,7 +7,7 @@ service cron start
 #python3 test_init.py
 
 if ["$ENVIRONMENT" == "prod"] then
-    gunicorn --certfile=server.crt --keyfile=server.key --bind 0.0.0.0:8000 app:app
+    gunicorn --certfile=/etc/letsencrypt/live/wordle-bot.kneubots.com/fullchain.pem  --keyfile=/etc/letsencrypt/live/wordle-bot.kneubots.com/privkey.pem --bind 0.0.0.0:8000 app:app
 else
     gunicorn --bind 0.0.0.0:8000 app:app
 fi
