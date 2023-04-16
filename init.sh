@@ -1,7 +1,5 @@
 #!/bin/bash
 
-ENVIRONMENT=$1
-
 service cron start
 
 #python3 test_init.py

@@ -62,9 +62,9 @@ Make sure you delete the database and scoreboard before building
 
 docker build -t wordle_bot_image .
 
-docker run --rm --name wordle_bot_container -p 80:8000 wordle_bot_image --dev
+docker run --rm --name wordle_bot_container -p 80:8000 wordle_bot_image export ENVIRONMENT=dev
 
 To run with https enabled on the Compute VM Instance run:
 
-docker run --rm --name wordle_bot_container -p 80:8000 wordle_bot_image --prod
+docker run --rm --name wordle_bot_container -p 80:8000 wordle_bot_image export ENVIRONMENT=prod
 
