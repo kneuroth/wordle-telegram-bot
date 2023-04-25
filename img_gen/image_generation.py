@@ -25,10 +25,10 @@ def get_scoreboard_html_and_css(database, season_id):
     <table border="1" align="center" >
     <thead>
         <tr>
-            <th>{headers[0]}</th>
-            <th>{headers[1]}</th>
-            <th>{headers[2]}</th>
-            <th>{"</th><th>".join([player for player in headers[3:]])}</th>
+            <th class='yellow'>Date</th>
+            <th class='yellow'>Wordle</th>
+            <th class='yellow'>Word</th>
+            <th class='green'>{"</th><th class='green'>".join([player for player in headers[3:]])}</th>
         </tr>
 
         <tr>
@@ -66,7 +66,16 @@ def get_scoreboard_html_and_css(database, season_id):
 </body>
 </html>
     """
-    css = ['body {background:red;}','table {width:100%}', 'td {text-align: center;}', 'tr {height:30px}']
+    yellow = '#c8b653'
+    green = '#6ca965'
+    grey = '#787c7f'
+    css = [
+        'body { background-color: black }',
+        'table { width:100%; border-collapse: separate; border-spacing: 4px; font-size: 14px;  font-weight: bold; font-family: Arial, sans-serif; color: white !important; }', 
+        'th, td { text-align: center; vertical-align: middle; padding-top: 5px; padding-bottom: 5px; background-color: black; border-width: 2px; border-bottom-color: #333333; border-right-color: #333333; }',
+        f'.yellow {{background-color: {yellow}}}',
+        f'.green {{background-color: {green}}}'
+        ]
 
     return (html, css)
 
@@ -98,6 +107,6 @@ def generate_scoreboard_image(database, season_id):
     
     html, css = get_scoreboard_html_and_css(database, season_id)
 
-    path = hti.screenshot(html_str=html, css_str=css, save_as='scoreboard.png', size=(800, 1050))[0]
+    path = hti.screenshot(html_str=html, css_str=css, save_as='scoreboard.png', size=(800, 1200))[0]
 
     return path
