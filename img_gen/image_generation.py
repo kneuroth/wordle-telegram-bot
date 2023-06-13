@@ -1,6 +1,13 @@
 from html2image import Html2Image
+import os
 
 from dbio import get_season_scoreboard
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+CHROME_EXE = os.getenv("CHROME_EXE")
 
 def get_total_scores(data):
     # Returns player scores in a list
@@ -72,7 +79,7 @@ def get_scoreboard_html_and_css(database, season_id):
     css = [
         'body { background-color: black }',
         'table { width:100%; border-collapse: separate; border-spacing: 4px; font-size: 14px;  font-weight: bold; font-family: Arial, sans-serif; color: white !important; }', 
-        'th, td { text-align: center; vertical-align: middle; padding-top: 5px; padding-bottom: 5px; background-color: black; border-width: 2px; border-bottom-color: #333333; border-right-color: #333333; }',
+        'th, td { text-align: center; vertical-align: middle; padding-top: 5px; padding-bottom: 5px; background-color: black; border-width: 2px; border }',
         f'.yellow {{background-color: {yellow}}}',
         f'.green {{background-color: {green}}}'
         ]
@@ -102,7 +109,7 @@ def generate_scoreboard_image(database, season_id):
     -----
     None
     """
-    hti = Html2Image(custom_flags=['--no-sandbox']) 
+    hti = Html2Image(custom_flags=['--no-sandbox'], browser_executable=CHROME_EXE) 
     # Need --no-sandbox to run in docker container
     
     html, css = get_scoreboard_html_and_css(database, season_id)
