@@ -4,6 +4,8 @@ from dotenv import load_dotenv
 
 import os
 
+import sys
+
 from validation.update_validation import is_valid_score_submission ,is_valid_signup_message
 
 from context import get_wordle_number, get_wordle
@@ -35,13 +37,13 @@ elif env == "TEST":
     # Test environment
     print("Running in TEST")
 
-    @app.get("/test_get")
-    def test_get():
-        return "Insert a function in app.get('/test_get') to test that function"
-
-    @app.post("/test_post")
-    def test_post():
-        return "Insert an Update expecting function in app.post('/test_post') to test that function"
+    @app.post("/query")
+    def query():
+        return "Test"
+    
+    @app.get("/query")
+    def get_query():
+        return ""
 
 else:
     #Dev environment
@@ -131,7 +133,7 @@ def receive_update():
         
         # Check if everyone has submitted
         non_submittors = get_non_submittors(database, wordle_day_id)
-        if non_submittors == []:
+        if len(non_submittors) == 0:
             # Everyone has submitted
             is_first_day = is_first_day_of_season(database, season_id, today)
 
@@ -152,7 +154,7 @@ def receive_update():
             player_record = insert_player(database, player_id, player_name, wordle_game_id)
             send_message(f"Welcome to the game, {player_name}")
 
-    return "Posted"
+    return "Processed"
 
 @app.get("/day_end")
 def day_end():
@@ -171,7 +173,7 @@ def day_end():
         new_season_num = 1
         latest_season = get_max_season(database, wordle_game_id)
         if latest_season != None:
-            # There is no latest season so the season to be created is season 1
+            # There is a latest season so the season to be created is season 1 + latest season number
             new_season_num = latest_season[4] + 1
 
         # Create a new season
@@ -180,7 +182,7 @@ def day_end():
     yesterday_season_id = yesterday_season_record[1]
 
     # Check if there is a current wordle_day for yesterday
-    # This covers the extremely unlikely event that no one submitted the whole day, 
+    # This covers the event that no one submitted the whole day, 
     # thus no wordle_day entry was created.
     yesterday_wordle_day_record = get_record(database, 'wordle_days', ['season_id', 'date'], [yesterday_season_id, f"'{yesterday}'"])
     if yesterday_wordle_day_record == None:
@@ -196,17 +198,25 @@ def day_end():
     for non_submittor in non_submittors:
         insert_player_score(database, 8, yesterday_wordle_day_id, non_submittor[0])
 
-    # 8's have been suppled, now we can send the scoreboard
-    send_image(generate_scoreboard_image(database, yesterday_season_id))
+    # 8's have been supplied
+    # Don't send the scoreboard if there where no non-submittors 
+    # Or if there where no non-submittors and its the first day, send the scoreboard
+    # This is confusing and could be a OR but it's separated for readability and logical differences in conditions
+    was_first_day = is_first_day_of_season(database, yesterday_season_id, yesterday)
+    if was_first_day:
+        # It is the end of the first day so we have to send scoreboard regardless of how many people submitted
+        send_image(generate_scoreboard_image(database, yesterday_season_id))
+    elif len(non_submittors) > 0:
+        # It's not the first day and at least 1 person didnt submit so we have to send the scoreboard
+        send_image(generate_scoreboard_image(database, yesterday_season_id))
+    else:
+        # It is not the end of the first day and everyone submitted, so the last submission yesterday
+        # would have sent the scoreboard
+        pass
 
     if yesterday == get_record(database, 'seasons', ['id'], [yesterday_season_id])[3]:
         # Yesterday was the last day in the season
         send_message(f"Congrats on winning, {' and '.join(get_season_winners(database, yesterday_season_id))}")
-
-
-        
-            
-            
 
     return "End"
 
