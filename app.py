@@ -1,5 +1,5 @@
 import datetime
-from flask import Flask, request
+from flask import Flask, request, render_template
 from dotenv import load_dotenv
 
 import os
@@ -10,7 +10,7 @@ from validation.update_validation import is_valid_score_submission ,is_valid_sig
 
 from context import get_wordle_number, get_wordle
 
-from dbio import create_tables, get_record, insert_wordle_game, insert_player, insert_season, insert_wordle_day, insert_player_score, update_record
+from dbio import create_tables, get_record, get_all_records, insert_wordle_game, insert_player, insert_season, insert_wordle_day, insert_player_score, update_record
 from dbio import is_first_day_of_season, get_season_by_date, get_max_season, get_non_submittors, get_season_winners
 
 from send_message import send_image, send_message
@@ -49,8 +49,6 @@ else:
     #Dev environment
     print("Running in DEV")
 
-
-
 # Get the current wordle_game (tuple)
 wordle_game_record = get_record(database, 'wordle_games', ['chat_id'], [chat_id])
 
@@ -59,6 +57,18 @@ if wordle_game_record == None:
     wordle_game_record = insert_wordle_game(database, int(os.getenv("CHAT_ID")))
 
 wordle_game_id = wordle_game_record[0]
+
+# Create interactive database access tool right here.
+# TODO: FIgure out if I can call python functions from this render_template, then if so
+# add CRUD features, Create, Read, Update, Delete
+
+# TODO: Protect this route somehow?
+@app.get("/database")
+def database_page():
+    record_types = ['wordle_games', 'seasons', 'players', 'wordle_days', 'player_scores']
+    records = [{"name": record_type, "record":get_all_records(database, record_type)} for record_type in record_types]
+    return render_template('admin_dashboard.html', data=records)
+
 
 @app.get("/")
 def main_page():

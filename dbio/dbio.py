@@ -140,6 +140,9 @@ def get_records(database: str, table_name: str, fields: list, values: list):
     where_clause = " AND ".join([f"{field}={value}" for field, value in zip(fields, values)])
     return query_many(database, f"SELECT * FROM {table_name} WHERE {where_clause}")[0]
 
+def get_all_records(database: str, table_name: str):
+    return query_many(database, f"SELECT * FROM {table_name}")
+
 def update_record(database: str, table_name: str, id_fields: list, id_values: list, update_fields: list, update_values: list):
     # Update a record. id_fields and values go in the WHERE clause to specify which record to update, while the 
     # update_fields and and values are the values that should be updated
