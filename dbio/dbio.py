@@ -30,12 +30,28 @@ def insert_record(database: str, table_name: str, table_fields: tuple, record_da
 
     cursor = connection.cursor()
 
-    query = f"""
-    INSERT INTO {table_name} {table_fields}
-    VALUES {record_data};
-    """
+    # Check if record with the same field values already exists
+
+    # Enclose record_data fields with quotes if they don't have it
+    # TODO: Standardize this
+    quoted_record_data = [f"'{data}'" for data in record_data]
+    query = f"SELECT * FROM {table_name} WHERE {' AND '.join(f'{table_fields[field]} = {quoted_record_data[field]}' for field in range(len(table_fields)))}"
+    
+    cursor.execute(query)
+    existing_record = cursor.fetchone()
+
+    if existing_record:
+        return existing_record
 
     try:
+
+        # Doing these length checks because forcing a single element tuple like (element,)
+        # to prevent python from interpreting the () as an expression causes SQL to get a syntax error
+        # because it includes the trailing comma 
+        query = f"""
+        INSERT INTO {table_name} {table_fields if len(table_fields) > 1 else f"('{table_fields[0]}')"}
+        VALUES {record_data if len(record_data) > 1 else f"('{record_data[0]}')"};
+        """
 
         # Execute the INSERT query
         cursor.execute(query)
@@ -109,7 +125,7 @@ def query_many(database:str, query:str):
 def insert_wordle_game(database: str, chat_id: int):
     # Adds a wordle game into the wordle_games table
     # Have to insert the brackets and quotes in cases where insert_record table_feilds and record_date tuples are of length < 2
-    return insert_record(database, 'wordle_games', ("('chat_id')"), (f"({chat_id})"))
+    return insert_record(database, 'wordle_games', ('chat_id',), (chat_id,))
 
 def insert_season(database: str, season_number: int, start_date: datetime.date, end_date: datetime.date, wordle_game_id: int):
     # Adds a season into the seasons table. Cast dates to str. See insert_record for more info

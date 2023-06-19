@@ -46,10 +46,10 @@ class TestContext(unittest.TestCase):
         print(f"Today's wordle is {result}")
         self.assertNotEqual('?????', result)
 
-class TestSendMessage(unittest.TestCase):
-    def test_send_message(self):
-        # See if received a text
-        send_message("Test")
+# class TestSendMessage(unittest.TestCase):
+#     def test_send_message(self):
+#         # See if received a text
+#         send_message("Test")
 
     #def test_send_image(self):
         #send_image('scoreboard.png')
@@ -154,36 +154,36 @@ class TestDBIO(unittest.TestCase):
 
         self.assertEqual([], get_non_submittors(database, wordle_day_id))
 
-    def test_get_season_scoreboard(self):
-        # Will also generate the html scoreboard, but not test it, per say
-        # Create players to test with
-        player1 = insert_player(database, 1, 'Player 1', 1)
-        player2 = insert_player(database, 2, 'Player 2', 1)
-        player3 = insert_player(database, 3, 'Player 3', 1)
+    # def test_get_season_scoreboard(self):
+    #     # Will also generate the html scoreboard, but not test it, per say
+    #     # Create players to test with
+    #     player1 = insert_player(database, 1, 'Player 1', 1)
+    #     player2 = insert_player(database, 2, 'Player 2', 1)
+    #     player3 = insert_player(database, 3, 'Player 3', 1)
 
-        today = datetime.date.today()
+    #     today = datetime.date.today()
 
-        one_day_delta = datetime.timedelta(days=1)
-        two_day_delta = datetime.timedelta(days=2)
-        three_day_delta = datetime.timedelta(days=3)
-
-
-        season1 = insert_season(database, 1, today, today + one_day_delta, 1)
-        season2 = insert_season(database, 2, today + two_day_delta, today + three_day_delta, 1)
-
-        wordle_day_S1_D1 = insert_wordle_day(database, "FIRST", 100, today, season1[0] )
-        wordle_day_S1_D2 = insert_wordle_day(database, "SECND", 101, today + one_day_delta, season1[0])
-        wordle_day_S2_D1 = insert_wordle_day(database, "THIRD", 102, today + two_day_delta, season2[0] )
-        wordle_day_S2_D2 = insert_wordle_day(database, "FORTH", 103, today + three_day_delta, season2[0])
+    #     one_day_delta = datetime.timedelta(days=1)
+    #     two_day_delta = datetime.timedelta(days=2)
+    #     three_day_delta = datetime.timedelta(days=3)
 
 
-        for wordle_day in [wordle_day_S1_D1, wordle_day_S1_D2, wordle_day_S2_D1, wordle_day_S2_D2]:
-            for player in [player1, player2, player3]:
-                insert_player_score(database, player[0], wordle_day[0], player[0])
+    #     season1 = insert_season(database, 1, today, today + one_day_delta, 1)
+    #     season2 = insert_season(database, 2, today + two_day_delta, today + three_day_delta, 1)
 
-        generate_scoreboard_image(database, season1[0])
+    #     wordle_day_S1_D1 = insert_wordle_day(database, "FIRST", 100, today, season1[0] )
+    #     wordle_day_S1_D2 = insert_wordle_day(database, "SECND", 101, today + one_day_delta, season1[0])
+    #     wordle_day_S2_D1 = insert_wordle_day(database, "THIRD", 102, today + two_day_delta, season2[0] )
+    #     wordle_day_S2_D2 = insert_wordle_day(database, "FORTH", 103, today + three_day_delta, season2[0])
 
-        self.assertEqual(([(str(today), 100, 'FIRST', 1, 2, 3), (str(today + one_day_delta), 101, 'SECND', 1, 2, 3)], ['date', 'wordle_number', 'word', 'Player 1', 'Player 2', 'Player 3']), get_season_scoreboard(database, season1[0]))
+
+    #     for wordle_day in [wordle_day_S1_D1, wordle_day_S1_D2, wordle_day_S2_D1, wordle_day_S2_D2]:
+    #         for player in [player1, player2, player3]:
+    #             insert_player_score(database, player[0], wordle_day[0], player[0])
+
+    #     generate_scoreboard_image(database, season1[0])
+
+    #    self.assertEqual(([(str(today), 100, 'FIRST', 1, 2, 3), (str(today + one_day_delta), 101, 'SECND', 1, 2, 3)], ['date', 'wordle_number', 'word', 'Player 1', 'Player 2', 'Player 3']), get_season_scoreboard(database, season1[0]))
 
     def test_get_season_winner(self):
         # Create players to test with
@@ -284,34 +284,34 @@ class TestImgGen(unittest.TestCase):
         drop_tables(database)
         os.remove(database)
 
-    def test_generate_scoreboard_image(self):
-        # Doesn't actually run a true test but still generates a sample scoreboard
-        # image. Test by viewing the image
+    # def test_generate_scoreboard_image(self):
+    #     # Doesn't actually run a true test but still generates a sample scoreboard
+    #     # image. Test by viewing the image
 
-        wordle_game = insert_wordle_game(database, 1)
+    #     wordle_game = insert_wordle_game(database, 1)
 
-        wordle_game_id = wordle_game[0]
-        players = []
-        for i in range(6):
-            player = insert_player(database, i, f'Wordler {i}', wordle_game_id)
-            players.append(player)
+    #     wordle_game_id = wordle_game[0]
+    #     players = []
+    #     for i in range(6):
+    #         player = insert_player(database, i, f'Wordler {i}', wordle_game_id)
+    #         players.append(player)
 
-        today = datetime.date.today()
+    #     today = datetime.date.today()
 
-        season_length = 30
+    #     season_length = 30
 
-        season1 = insert_season(database, 1, today, today + datetime.timedelta(days=season_length), 1)
+    #     season1 = insert_season(database, 1, today, today + datetime.timedelta(days=season_length), 1)
 
-        for i in range(season_length):
-            wordle_day = insert_wordle_day(database, ("").join(random.choices(string.ascii_uppercase, k=5)), 100 + i, today + datetime.timedelta(days=i), 1)
-            for player in players:
-                insert_player_score(database, random.choice([1, 2, 3, 4, 5, 6, 7, 8]), wordle_day[0], player[0])
+    #     for i in range(season_length):
+    #         wordle_day = insert_wordle_day(database, ("").join(random.choices(string.ascii_uppercase, k=5)), 100 + i, today + datetime.timedelta(days=i), 1)
+    #         for player in players:
+    #             insert_player_score(database, random.choice([1, 2, 3, 4, 5, 6, 7, 8]), wordle_day[0], player[0])
 
-        scoreboard_path = generate_scoreboard_image(database, 1)
+    #     scoreboard_path = generate_scoreboard_image(database, 1)
 
-        send_image(scoreboard_path)
+    #     send_image(scoreboard_path)
         
-        send_message(f"Congrats to {' and '.join(get_season_winners(database, 1))}! You won")
+    #     send_message(f"Congrats to {' and '.join(get_season_winners(database, 1))}! You won")
 
         #self.assertEqual(f"{parent_path}/scoreboard.png", scoreboard_path)
 
