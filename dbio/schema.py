@@ -12,12 +12,12 @@ def create_tables(datebase_name: str):
     create_tables_query = """
 
     CREATE TABLE IF NOT EXISTS wordle_games (
-        id INTEGER PRIMARY KEY,
+        id INTEGER PRIMARY KEY UNIQUE,
         chat_id INTEGER
     );
 
     CREATE TABLE IF NOT EXISTS seasons (
-        id INTEGER PRIMARY KEY,
+        id INTEGER PRIMARY KEY UNIQUE,
         season_number INTEGER,
         start_date DATE,
         end_date DATE,
@@ -26,14 +26,14 @@ def create_tables(datebase_name: str):
     );
 
     CREATE TABLE IF NOT EXISTS players (
-        id INTEGER PRIMARY KEY,
+        id INTEGER PRIMARY KEY UNIQUE,
         name TEXT,
         wordle_game_id INTEGER,
         FOREIGN KEY (wordle_game_id) REFERENCES wordle_games(id)
     );
 
     CREATE TABLE IF NOT EXISTS wordle_days (
-        id INTEGER PRIMARY KEY,
+        id INTEGER PRIMARY KEY UNIQUE,
         word TEXT,
         wordle_number INTEGER,
         date DATE,
@@ -42,7 +42,7 @@ def create_tables(datebase_name: str):
     );
 
     CREATE TABLE IF NOT EXISTS player_scores (
-        id INTEGER PRIMARY KEY,
+        id INTEGER PRIMARY KEY UNIQUE,
         score INTEGER,
         wordle_day_id INTEGER,
         player_id INTEGER,

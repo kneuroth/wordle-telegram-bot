@@ -26,20 +26,96 @@
             <thead>
                 <tr>
                     {% for header in record["record"][1] %}
+                    <!-- Header row -->
                     <th>{{ header }}</th>
                     {% endfor %}
+                    <th>Controls</th>
                 </tr>
+                
             </thead>
             <tbody>
+                <tr>
+                    {% for input in record["record"][1]%}
+                    <!-- Add record row -->
+                        {% if input != 'id' %}
+                            <td><input type="text" id="{{record['name']}}.{{input}}" placeholder="{{input}}" label="Format"></td>
+                        {% else %}
+                            <td>{{input}}</td>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    <td>
+                        <button onclick="post_record({{record}})">Add</button>
+                    </td>
+                </tr>
                 {% for row in record["record"][0] %}
+                <!-- Rows of each record type -->
                     <tr>
                         {% for col in row %}
-                        <td>{{ col }}</td>
+                            <td><input type="text" placeholder="{{col}}" value="{{col}}"></td>
                         {% endfor %}
+
+                        <td>
+                            <button>Update</button>
+                            <button onclick="delete_record({{row[0]}}, {{record}})">Delete</button>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table> 
     {% endfor %}
+
+    <script>
+    function post_record(record) {
+        let body = {}
+        for (let i = 0; i < record["record"].length; i++) {
+            field = record["record"][i]
+            if (field != 'id'){
+                // ID not needed for post?
+                body[field] = document.getElementById(`${record["name"]}.${field}`).value
+            }
+        }
+        fetch(`http://localhost:5000/${record["name"]}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+        })
+        .then(response => {
+            if (response.ok) {
+                // Request was successful
+                console.log('Data point added successfully');
+            } else {
+                // Request encountered an error
+                console.error('Error adding data point');
+            }
+        })
+        .catch(error => {
+            console.error('An error occurred:', error);
+        });
+    }
+    function delete_record(id, record){
+        table = record["name"]
+        console.log(table)
+        console.log(id)
+        fetch(`http://localhost:5000/${table}/${id}`, {
+            method: 'DELETE',
+        })
+        .then(response => {
+            if (response.ok) {
+                // Request was successful
+                console.log('Data point removed successfully');
+            } else {
+                // Request encountered an error
+                console.error('Error removing data point');
+            }
+        })
+        .catch(error => {
+            console.error('An error occurred:', error);
+        });
+
+    }
+    </script>
 </body>
 </html>

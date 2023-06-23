@@ -11,13 +11,21 @@ from validation.update_validation import is_valid_score_submission ,is_valid_sig
 from context import get_wordle_number, get_wordle
 
 from dbio import create_tables, get_record, get_all_records, insert_wordle_game, insert_player, insert_season, insert_wordle_day, insert_player_score, update_record
-from dbio import is_first_day_of_season, get_season_by_date, get_max_season, get_non_submittors, get_season_winners
+from dbio import is_last_day_of_season, is_first_day_of_season, is_first_day_of_season, get_season_by_date, get_max_season, get_non_submittors, get_season_winners
 
 from send_message import send_image, send_message
 
 from img_gen import generate_scoreboard_image, get_scoreboard_html_and_css
 
+from routes import wordle_games_bp, seasons_bp, players_bp, wordle_days_bp, player_scores_bp
+
 app = Flask(__name__)
+
+app.register_blueprint(wordle_games_bp)
+app.register_blueprint(seasons_bp)
+app.register_blueprint(players_bp)
+app.register_blueprint(wordle_days_bp)
+app.register_blueprint(player_scores_bp)
 
 load_dotenv()
 
@@ -150,7 +158,7 @@ def receive_update():
             if not is_first_day:
                 send_image(generate_scoreboard_image(database, season_id))            
 
-            if datetime.date.today() == get_record(database, 'seasons', ['id'], [season_id])[3]:
+            if is_last_day_of_season(database, season_id, today):
                 # Today is the last day in the season
                 send_message(f"Congrats on winning, {' and '.join(get_season_winners(database, season_id))}")
 
@@ -224,7 +232,7 @@ def day_end():
         # would have sent the scoreboard
         pass
 
-    if yesterday == get_record(database, 'seasons', ['id'], [yesterday_season_id])[3]:
+    if is_last_day_of_season(database, yesterday_season_id, yesterday):
         # Yesterday was the last day in the season
         send_message(f"Congrats on winning, {' and '.join(get_season_winners(database, yesterday_season_id))}")
 

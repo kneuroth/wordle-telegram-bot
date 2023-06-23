@@ -2,11 +2,55 @@ import sqlite3
 
 import datetime
 
+#TODO: Standardize return types of all of these so it's json or something, idk
+
 # -------HELPER FUNCTIONS--------#
+
+def delete_record(database: str, table_name: str, id:int ):
+    """
+    Deletes a record from a table. Used in the admin console only, not used in app.py
+    
+    Parameters
+    ----------
+    database: string
+        Path/name of database to insert record
+    
+    table_name: str
+        Name of table to insert record
+
+    id: int
+        Required id field of the desired record to delete
+
+    Returns
+    -------
+    Boolean
+        False if the record was not found, True if found and succesfully deleted
+    """
+    connection = sqlite3.connect(database)
+
+    cursor = connection.cursor()
+    query = f"DELETE FROM {table_name} WHERE id = {id}"
+
+    try:
+        # Execute DELETE query
+        cursor.execute(query)
+        
+        # Commit the DELETE
+        connection.commit()
+
+        return True
+    except sqlite3.Error as er:
+        print("SQLERROR: ", er)
+        connection.rollback()
+        return False
+    finally:
+        cursor.close()
+        connection.close()
+    
 
 def insert_record(database: str, table_name: str, table_fields: tuple, record_data: tuple):
     """
-    Inserts a record into a table. Will not be exported for use by the main app. Will only be used in dbio.py
+    Inserts a record into a table. Will not be exported for use by app.py.
 
     Parameters
     ----------
@@ -163,15 +207,15 @@ def update_record(database: str, table_name: str, id_fields: list, id_values: li
     # Update a record. id_fields and values go in the WHERE clause to specify which record to update, while the 
     # update_fields and and values are the values that should be updated
     # connect to the database
+    # Dates should be strings enclosed in 'quotes'
     connection = sqlite3.connect(database)
 
     # create a cursor object
     cursor = connection.cursor()
 
-    set_clause = " AND ".join([f"{field}={value}" for field, value in zip(update_fields, update_values)])
+    set_clause = " , ".join([f"{field}={value}" for field, value in zip(update_fields, update_values)])
     where_clause = " AND ".join([f"{field}={value}" for field, value in zip(id_fields, id_values)])
     query = f"UPDATE {table_name} SET {set_clause} WHERE {where_clause}"
-
     try:
 
         # execute an UPDATE query to modify a record
@@ -200,6 +244,12 @@ def update_record(database: str, table_name: str, id_fields: list, id_values: li
 def is_first_day_of_season(database, season_id, date):
     start_date = query_one(database, f"""
     SELECT start_date FROM seasons WHERE id={season_id}
+    """)[0]
+    return start_date == str(date)
+
+def is_last_day_of_season(database, season_id, date):
+    start_date = query_one(database, f"""
+    SELECT end_date FROM seasons WHERE id={season_id}
     """)[0]
     return start_date == str(date)
 

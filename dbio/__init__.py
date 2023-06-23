@@ -1,2 +1,2 @@
 from .schema import create_tables, drop_tables
-from .dbio import insert_wordle_game, insert_player, insert_season, insert_wordle_day, insert_player_score, get_record, get_records, get_all_records, is_first_day_of_season, get_season_by_date, get_max_season, update_record, get_non_submittors, get_season_scoreboard, get_season_winners
+from .dbio import insert_wordle_game, insert_player, insert_season, insert_wordle_day, insert_player_score, get_record, get_records, get_all_records, is_last_day_of_season, is_first_day_of_season, get_season_by_date, get_max_season, update_record, get_non_submittors, get_season_scoreboard, get_season_winners, delete_record
