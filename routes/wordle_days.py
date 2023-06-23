@@ -28,7 +28,7 @@ def create_wordle_day():
     
     word = json_data.get('word')
     wordle_number = json_data.get('wordle_number')
-    date = datetime.date(int(date_str[:4]), int(date_str[6:7]), int(date_str[9:10]))
+    date = datetime.date(int(date_str[:4]), int(date_str[5:7]), int(date_str[8:10]))
     season_id = json_data.get('season_id')    
 
     return jsonify(insert_wordle_day(database, word, wordle_number, date, season_id))
@@ -43,7 +43,7 @@ def update_wordle_day(wordle_day_id):
     
     word = json_data.get('word')
     wordle_number = json_data.get('wordle_number')
-    date = datetime.date(int(date_str[:4]), int(date_str[6:7]), int(date_str[9:10]))
+    date = datetime.date(int(date_str[:4]), int(date_str[5:7]), int(date_str[8:10]))
     season_id = json_data.get('season_id')  
 
     update_fields = ['word', 'wordle_number', 'date', 'season_id']

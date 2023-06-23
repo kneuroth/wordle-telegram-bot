@@ -31,8 +31,8 @@ def create_season():
     start_date_str = str(json_data.get('start_date'))
     end_date_str = str(json_data.get('end_date'))
 
-    start_date = datetime.date(int(start_date_str[:4]), int(start_date_str[6:7]), int(start_date_str[9:10]))
-    end_date = datetime.date(int(end_date_str[:4]), int(end_date_str[6:7]), int(end_date_str[9:10]))
+    start_date = datetime.date(int(start_date_str[:4]), int(start_date_str[5:7]), int(start_date_str[8:10]))
+    end_date = datetime.date(int(end_date_str[:4]), int(end_date_str[5:7]), int(end_date_str[8:10]))
     
     wordle_game_id = json_data.get('wordle_game_id')
 
@@ -49,9 +49,9 @@ def update_season(season_id):
 
     start_date_str = str(json_data.get('start_date'))
     end_date_str = str(json_data.get('end_date'))
-    start_date = str(datetime.date(int(start_date_str[:4]), int(start_date_str[6:7]), int(start_date_str[9:10])))
-    end_date = str(datetime.date(int(end_date_str[:4]), int(end_date_str[6:7]), int(end_date_str[9:10])))
-    
+    start_date = str(datetime.date(int(start_date_str[:4]), int(start_date_str[5:7]), int(start_date_str[8:10])))
+    end_date = str(datetime.date(int(end_date_str[:4]), int(end_date_str[5:7]), int(end_date_str[8:10])))
+
     wordle_game_id = json_data.get('wordle_game_id')
 
     update_fields = ['season_number', 'start_date', 'end_date', 'wordle_game_id']
