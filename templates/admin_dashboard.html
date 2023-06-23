@@ -20,7 +20,7 @@
     </style>
 </head>
 <body>
-    {% for record in data %}
+    {% for record in data["data"] %}
         <h1>{{record["name"]}}</h1>    
         <table>
             <thead>
@@ -35,7 +35,7 @@
             </thead>
             <tbody>
                 <tr>
-                    {% for input in record["record"][1]%}
+                    {% for input in record["record"][1] %}
                     <!-- Add record row -->
                         {% if input != 'id' or record['name'] == 'players'%}
                             <td><input type="text" id="{{record['name']}}.{{input}}" placeholder="{{input}}" label="Format"></td>
@@ -45,7 +45,7 @@
                     {% endfor %}
                     
                     <td>
-                        <button onclick="post_record({{record}})">Add</button>
+                        <button onclick="post_record({{record}}, '{{data['url']}}')">Add</button>
                     </td>
                 </tr>
                 {% for row in record["record"][0] %}
@@ -56,8 +56,8 @@
                         {% endfor %}
 
                         <td>
-                            <button onClick="put_record({{row[0]}}, {{record}})">Update</button>
-                            <button onclick="delete_record({{row[0]}}, {{record}})">Delete</button>
+                            <button onClick="put_record({{row[0]}}, {{record}}, '{{data['url']}}')">Update</button>
+                            <button onclick="delete_record({{row[0]}}, {{record}}, '{{data['url']}}')">Delete</button>
                         </td>
                     </tr>
                 {% endfor %}
@@ -66,13 +66,13 @@
     {% endfor %}
 
     <script>
-        function put_record(id, record) {
+        function put_record(id, record, url) {
             let body = {}
             for (let i = 0; i < record["record"].length; i++) {
                 field = record["record"][i]
                 body[field] = document.getElementById(`${record["name"]}.${id}.${field}`).value
             }
-            fetch(`http://localhost:5000/${record["name"]}/${id}`, {
+            fetch(`${url}/${record["name"]}/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
@@ -92,7 +92,7 @@
                 console.error('An error occurred:', error);
             });
         }
-        function post_record(record) {
+        function post_record(record, url) {
             let body = {}
             for (let i = 0; i < record["record"].length; i++) {
                 field = record["record"][i]
@@ -102,7 +102,7 @@
                     body[field] = document.getElementById(`${record["name"]}.${field}`).value
                 }
             }
-            fetch(`http://localhost:5000/${record["name"]}`, {
+            fetch(`${url}/${record["name"]}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -122,9 +122,12 @@
                 console.error('An error occurred:', error);
             });
         }
-        function delete_record(id, record){
+        function delete_record(id, record, url){
+
             table = record["name"]
-            fetch(`http://localhost:5000/${table}/${id}`, {
+            console.log(url)
+            console.log(table)
+            fetch(`${url}/${table}/${id}`, {
                 method: 'DELETE',
             })
             .then(response => {

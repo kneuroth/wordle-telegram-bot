@@ -34,6 +34,7 @@ env = os.getenv("ENV")
 database = os.getenv("DATABASE")
 chat_id = os.getenv("CHAT_ID")
 season_length = os.getenv("SEASON_LENGTH")
+crud_url = os.getenv("CRUD_URL")
 
 create_tables(database)
 
@@ -74,8 +75,8 @@ wordle_game_id = wordle_game_record[0]
 @app.get("/database")
 def database_page():
     record_types = ['wordle_games', 'seasons', 'players', 'wordle_days', 'player_scores']
-    records = [{"name": record_type, "record":get_all_records(database, record_type)} for record_type in record_types]
-    return render_template('admin_dashboard.html', data=records)
+    data = { "data":[ {"name": record_type, "record":get_all_records(database, record_type)} for record_type in record_types], "url": crud_url }
+    return render_template('admin_dashboard.html', data=data)
 
 
 @app.get("/")
