@@ -278,7 +278,7 @@ def get_season_scoreboard(database, season_id):
                         FROM player_scores ps
                         JOIN wordle_days wd ON ps.wordle_day_id = wd.id
                         JOIN players p ON ps.player_id = p.id
-                        WHERE wd.season_id = 1
+                        WHERE wd.season_id={season_id}
                         GROUP BY date, wordle_number, word
     
     """)
