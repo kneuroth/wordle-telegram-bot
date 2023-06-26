@@ -233,7 +233,7 @@ def day_end():
         # would have sent the scoreboard
         pass
 
-    if is_last_day_of_season(database, yesterday_season_id, yesterday):
+    if is_last_day_of_season(database, yesterday_season_id, yesterday) and len(non_submittors) > 0:
         # Yesterday was the last day in the season
         send_message(f"Congrats on winning, {' and '.join(get_season_winners(database, yesterday_season_id))}")
 
