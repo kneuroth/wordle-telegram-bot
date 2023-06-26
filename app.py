@@ -122,7 +122,7 @@ def receive_update():
             latest_season = get_max_season(database, wordle_game_id)
             if latest_season != None:
                 # There is a latest season so the season to be created is 1 + the latest season number
-                new_season_num = latest_season[4] + 1
+                new_season_num = latest_season[1] + 1
 
             # Create a new season
             season_record = insert_season(database, new_season_num, today, today + datetime.timedelta(days=int(season_length)), wordle_game_id)
@@ -193,7 +193,7 @@ def day_end():
         latest_season = get_max_season(database, wordle_game_id)
         if latest_season != None:
             # There is a latest season so the season to be created is season 1 + latest season number
-            new_season_num = latest_season[4] + 1
+            new_season_num = latest_season[1] + 1
 
         # Create a new season
         yesterday_season_record = insert_season(database, new_season_num, yesterday, yesterday + datetime.timedelta(days=int(season_length)), wordle_game_id)
