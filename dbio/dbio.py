@@ -248,10 +248,10 @@ def is_first_day_of_season(database, season_id, date):
     return start_date == str(date)
 
 def is_last_day_of_season(database, season_id, date):
-    start_date = query_one(database, f"""
+    end_date = query_one(database, f"""
     SELECT end_date FROM seasons WHERE id={season_id}
     """)[0]
-    return start_date == str(date)
+    return end_date == str(date)
 
 def get_season_scoreboard(database, season_id):
     # Returns tuple of (records, columns)
