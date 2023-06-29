@@ -25,7 +25,7 @@ update_schema = {
                         "last_name": {"type": "string"},
                         "username": {"type": "string"}
                     },
-                    "required": ["id", "first_name", "username"]
+                    "required": ["id", "first_name"]
                 },
                 "chat": {
                     "type": "object",
@@ -45,7 +45,6 @@ update_schema = {
     },
     "required": ["update_id", "message"]
 }
-
 # -------HELPER FUNCTIONS--------#
 
 def validate_json(update):
