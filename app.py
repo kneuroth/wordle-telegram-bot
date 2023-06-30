@@ -11,11 +11,11 @@ from validation.update_validation import is_valid_score_submission ,is_valid_sig
 from context import get_wordle_number, get_wordle
 
 from dbio import create_tables, get_record, get_all_records, insert_wordle_game, insert_player, insert_season, insert_wordle_day, insert_player_score, update_record
-from dbio import is_last_day_of_season, is_first_day_of_season, is_first_day_of_season, get_season_by_date, get_max_season, get_non_submittors, get_season_winners
+from dbio import is_last_day_of_season, is_first_day_of_season, is_first_day_of_season, get_season_by_date, get_max_season, get_non_submittors, get_season_winners, get_season_scoreboard
 
 from send_message import send_image, send_message
 
-from img_gen import generate_scoreboard_image, get_scoreboard_html_and_css
+from img_gen import generate_scoreboard_image, get_scoreboard_html_and_css, get_total_scores
 
 from routes import wordle_games_bp, seasons_bp, players_bp, wordle_days_bp, player_scores_bp
 
@@ -84,7 +84,10 @@ def main_page():
     latest_season = get_max_season(database, wordle_game_id)
     if latest_season != None:
         # There is a latest season so return the scoreboard for that season
-        return get_scoreboard_html_and_css(database, latest_season[0])[0]
+        data, headers = get_season_scoreboard(database, latest_season[0])
+        totals = get_total_scores(data)
+        html_data = {"totals": totals, "headers": headers, "data": data}
+        return render_template('scoreboard.html', data=html_data)
     else:
         return "No seasons yet!"
 
