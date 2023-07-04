@@ -58,6 +58,10 @@ else:
     #Dev environment
     print("Running in DEV")
 
+# TODO: (Biggie) Multiple chat / wordle game support
+# TODO: Update readme
+# TODO: What would a first iteration of custom designs look like?
+
 # Get the current wordle_game (tuple)
 wordle_game_record = get_record(database, 'wordle_games', ['chat_id'], [chat_id])
 
@@ -66,10 +70,6 @@ if wordle_game_record == None:
     wordle_game_record = insert_wordle_game(database, int(os.getenv("CHAT_ID")))
 
 wordle_game_id = wordle_game_record[0]
-
-# Create interactive database access tool right here.
-# TODO: FIgure out if I can call python functions from this render_template, then if so
-# add CRUD features, Create, Read, Update, Delete
 
 # TODO: Protect this route somehow?
 @app.get("/database")
@@ -137,7 +137,21 @@ def receive_update():
         if wordle_day_record == None:
             # There is no wordle_day for today yet
             wordle_day_record = insert_wordle_day(database, get_wordle(), get_wordle_number(today), today, season_id)
+        else:
+            # TODO: Check if the get_wordle is the same as previous day wordle_id, if so might need to run get_wordle again (if there is a prev day this season )
+            last_wordle_day_record = get_record(database, 'wordle_days', ['date'], [f"'{today - datetime.timedelta(days=1)}'"])
+            if last_wordle_day_record != None:
+                if wordle_day_record[1] == last_wordle_day_record[1] or wordle_day_record[1] == '?????':
+                    # Then the wordles are showing as the same for both days
+                    # or today's is ????? so we can try to 
+                    # call get_wordle() again and attempt to update today's wordle with the correct value
+                    update_fields = ['word']
+                    update_values = [f"'{get_wordle()}'"]
 
+                    update_record(database, 'wordle_days', ['id'], [wordle_day_record[0]], update_fields, update_values)
+                else:
+                    # The wordles aren't the same nor is today's '?????'
+                    pass
         wordle_day_id = wordle_day_record[0]
 
         # Now in the database we have a player, a current season, and a wordle day
@@ -147,12 +161,8 @@ def receive_update():
 
         else:
             # There already exists a player_score entry, you can't override your submission
-            # TODO: Send message saying you can't do that
-            pass
-            # ALTERNATE UNIVERSE: There already exists a player_score entry, modify it with the new score
-            # player_score_id = player_score_record[0]
-            # player_score_record = update_record(database, 'player_scores', ['id'], [player_score_id], ['score'], [score])
-        
+            send_message(f"You already submitted today, {player_name}")
+
         # Check if everyone has submitted
         non_submittors = get_non_submittors(database, wordle_day_id)
         if len(non_submittors) == 0:

@@ -17,8 +17,6 @@ In project root directory run:
 5. `$ pip install -e .`
 6. `$ flask run`
 
-
-
 ### Development
 
 

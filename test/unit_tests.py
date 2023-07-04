@@ -22,7 +22,7 @@ from send_message import send_message, send_image
 
 load_dotenv()
 
-database = os.getenv("DATABASE")
+database = os.getenv("TEST_DATABASE")
 
 class TestValidation(unittest.TestCase):
     def test_submission_scores(self):
@@ -84,10 +84,17 @@ class TestDBIO(unittest.TestCase):
         insert_player(database, -1999, 'Kelly', 1)
         self.assertEqual((-1999, 'Kelly', 1), get_record(database, 'players', ['id'], [-1999]))
     
-    def test_get_record_wordle_day_by_date(self):
+    def test_get_record_wordle_day_by_season_and_date(self):
         # Insert a wordle_day to test with
         insert_wordle_day(database, 'WORDLE', 123, datetime.date(2023, 3, 9), 1)
         self.assertEqual((1, 'WORDLE', 123, '2023-03-09', 1), get_record(database, 'wordle_days', ['season_id', 'date'], [1, f"'{datetime.date(2023, 3, 9)}'"]))
+
+    def test_get_record_wordle_day_by_date(self):
+        insert_wordle_day(database, 'WORDLE', 123, datetime.date(2023, 3, 9), 1)
+        insert_wordle_day(database, 'BURGLE', 124, datetime.date(2023, 3, 10), 1)
+        insert_wordle_day(database, 'MURDLE', 125, datetime.date(2023, 3, 11), 1)
+        insert_wordle_day(database, 'SWERVLE', 126, datetime.date(2023, 3, 12), 1)
+        self.assertEqual((1, 'WORDLE', 123, '2023-03-09', 1), get_record(database, 'wordle_days', ['date'], [f"'{datetime.date(2023, 3, 10) - datetime.timedelta(days=1)}'"]))
 
     def test_get_record_error(self):
         self.assertEqual(None, get_record(database, 'wordle_games', ['chat_id'], [-100]))
@@ -119,6 +126,15 @@ class TestDBIO(unittest.TestCase):
         new_player_score = update_record(database, 'player_scores', ['id'], [player_score_id], ['score'], [5])
 
         self.assertEqual((player_score_id, 5, 1, 1999), new_player_score )
+
+    def test_update_record_wordle_day(self):
+        insert_wordle_day(database, "FARKS", 122, datetime.date(2023, 10, 22), 1)
+        insert_wordle_day(database, "?????", 123, datetime.date(2023, 10, 23), 1)
+        insert_wordle_day(database, "FRICK", 124, datetime.date(2023, 10, 24), 1)
+        insert_wordle_day(database, "SOCKS", 125, datetime.date(2023, 10, 25), 1)
+
+        updated_wordle_day = update_record(database, 'wordle_days', ['date'], [f"'{datetime.date(2023, 10, 23)}'"], ['word'], ["'PISSD'"])
+        self.assertEqual((2, 'PISSD', 123, '2023-10-23', 1), updated_wordle_day)
 
     def test_get_non_submitors(self):
         # Create players to test with
