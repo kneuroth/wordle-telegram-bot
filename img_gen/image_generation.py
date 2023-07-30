@@ -1,3 +1,4 @@
+import datetime
 from html2image import Html2Image
 import os
 
@@ -20,16 +21,17 @@ def get_total_scores(data):
 
     return sums
 
-def get_scoreboard_html_and_css(database, season_id):
+def get_scoreboard_html_and_css(database, season_id, wordle_game_id):
 
-    data, headers = get_season_scoreboard(database, season_id) 
+    data, headers = get_season_scoreboard(database, season_id)
 
-
+    totals = get_total_scores(data)
     html = f"""
 <html>
     <body>
 
     <table border="1" align="center" >
+    <h1>Chat: {wordle_game_id}</h1>
     <thead>
         <tr>
             <th class='yellow'>Date</th>
@@ -40,7 +42,7 @@ def get_scoreboard_html_and_css(database, season_id):
 
         <tr>
             <th colspan="3">TOTALS</th>
-            <th>{"</th><th>".join(str(score) for score in get_total_scores(data))}
+            <th>{"</th><th>".join(str(score) for score in totals)}
         </tr>
 
     </thead>
@@ -78,6 +80,7 @@ def get_scoreboard_html_and_css(database, season_id):
     grey = '#787c7f'
     css = [
         'body { background-color: black }',
+        'h1 { font-weight: bold; font-family: Arial, sans-serif; color: white }',
         'table { width:100%; border-collapse: separate; border-spacing: 4px; font-size: 14px;  font-weight: bold; font-family: Arial, sans-serif; color: white !important; }', 
         'th, td { text-align: center; vertical-align: middle; padding-top: 5px; padding-bottom: 5px; background-color: black; border-width: 2px; border }',
         f'.yellow {{background-color: {yellow}}}',
@@ -87,12 +90,14 @@ def get_scoreboard_html_and_css(database, season_id):
     return (html, css)
 
 
-def generate_scoreboard_image(database, season_id):
+def generate_scoreboard_image(database, wordle_game_id, season_id):
     """
     Generate the PNG image of the wordle scoreboard
 
     Parameters
     ----------
+    wordle_game_chat_id: int
+        Telegram chat ID, used to create unique scoreboard filename
     season_id: int
         Unique season identifier
 
@@ -109,11 +114,15 @@ def generate_scoreboard_image(database, season_id):
     -----
     None
     """
+    today = str(datetime.date.today())
+
+    scoreboard_filename = f"scoreboard-{today}-{wordle_game_id}-S{season_id}.png"
+
     hti = Html2Image(custom_flags=['--no-sandbox'], browser_executable=CHROME_EXE) 
     # Need --no-sandbox to run in docker container
     
-    html, css = get_scoreboard_html_and_css(database, season_id)
+    html, css = get_scoreboard_html_and_css(database, season_id, wordle_game_id)
 
-    path = hti.screenshot(html_str=html, css_str=css, save_as='scoreboard.png', size=(800, 1200))[0]
+    path = hti.screenshot(html_str=html, css_str=css, save_as=scoreboard_filename, size=(800, 1300))[0]
 
     return path

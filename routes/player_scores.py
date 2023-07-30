@@ -27,8 +27,9 @@ def create_player_score():
     score = json_data.get('score')
     wordle_day_id = json_data.get('wordle_day_id')
     player_id = json_data.get('player_id')
+    season_id = json_data.get('season_id')
 
-    return jsonify(insert_player_score(database, score, wordle_day_id, player_id))
+    return jsonify(insert_player_score(database, score, wordle_day_id, player_id, season_id))
 
 @player_scores_bp.route('/<int:player_score_id>', methods=['PUT'])
 def update_player_score(player_score_id):
@@ -39,9 +40,10 @@ def update_player_score(player_score_id):
     score = json_data.get('score')
     wordle_day_id = json_data.get('wordle_day_id')
     player_id = json_data.get('player_id')
+    season_id = json_data.get('season_id')
 
-    update_fields = ['score', 'wordle_day_id', 'player_id']
-    update_values = [score, wordle_day_id, player_id]
+    update_fields = ['score', 'wordle_day_id', 'player_id', 'season_id']
+    update_values = [score, wordle_day_id, player_id, season_id]
 
     return jsonify(update_record(database, 'player_scores', ['id'], [player_score_id], update_fields, update_values))
 

@@ -24,24 +24,27 @@ def create_wordle_game():
 
     json_data = request.get_json()
 
-    chat_id = json_data.get('chat_id')    
+    chat_id = int(json_data.get('id'))
 
     return jsonify(insert_wordle_game(database, chat_id))
 
-@wordle_games_bp.route('/<int:wordle_game_id>', methods=['PUT'])
+@wordle_games_bp.route('/<wordle_game_id>', methods=['PUT'])
 def update_wordle_game(wordle_game_id):
     # You'll have to send all fields :/
 
     json_data = request.get_json()
 
-    chat_id = json_data.get('chat_id')
 
-    update_fields = ['chat_id']
+    print(json_data)
+
+    chat_id = int(json_data.get('id'))
+
+    update_fields = ['id']
     update_values = [chat_id]
 
     return jsonify(update_record(database, 'wordle_games', ['id'], [wordle_game_id], update_fields, update_values))
     
 
-@wordle_games_bp.route('/<int:wordle_game_id>', methods=['DELETE'])
+@wordle_games_bp.route('/<wordle_game_id>', methods=['DELETE'])
 def delete_wordle_game(wordle_game_id):
     return jsonify(delete_record(database, 'wordle_games', wordle_game_id))

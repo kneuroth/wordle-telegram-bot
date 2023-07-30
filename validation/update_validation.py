@@ -47,7 +47,7 @@ update_schema = {
 }
 # -------HELPER FUNCTIONS--------#
 
-def validate_json(update):
+def is_valid_message(update):
     # Validates the JSON schema of the update object
     try:
         jsonschema.validate(instance=update, schema=update_schema)
@@ -56,11 +56,6 @@ def validate_json(update):
         # print(e)
         return False
     return True
-
-def is_valid_message_and_chat(update):
-    # Validates the JSON schema and the chat.id field using the CHAT_ID env variable
-    chat_id = int(os.getenv("CHAT_ID"))
-    return validate_json(update) and update["message"]["chat"]["id"] == chat_id 
 
 def is_wordle_submission(text):
     # Validates that the text of a message follows Wordle submission structure
@@ -102,7 +97,7 @@ def is_valid_signup_message(update):
     None
     """
     signup_phrase = os.getenv("SIGNUP_PHRASE")
-    return is_valid_message_and_chat(update) and update["message"]["text"] == signup_phrase
+    return is_valid_message(update) and update["message"]["text"] == signup_phrase
 
 # TODO is valid score submission. returns true if it's a valid update object, 
 # its from the correct chat, the format of the text is correct, it's from today's wordle
@@ -134,4 +129,5 @@ def is_valid_score_submission(update):
     -----
     None
     """
-    return is_valid_message_and_chat(update) and is_wordle_submission(update["message"]["text"]) and is_todays_wordle_number(update["message"]["text"])
+    # For multiple chat supppot, replace is_valid_message_and_chat with validate_json()
+    return is_valid_message(update) and is_wordle_submission(update["message"]["text"]) and is_todays_wordle_number(update["message"]["text"])

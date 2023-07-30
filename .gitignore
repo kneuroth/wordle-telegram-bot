@@ -14,5 +14,7 @@ instance/
 __pycache__/
 
 # App specific:
-scoreboard.png
+*.png
 *.sqlite
+logs/*.log
+logs/*-updates

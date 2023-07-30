@@ -29,9 +29,8 @@ def create_wordle_day():
     word = json_data.get('word')
     wordle_number = json_data.get('wordle_number')
     date = datetime.date(int(date_str[:4]), int(date_str[5:7]), int(date_str[8:10]))
-    season_id = json_data.get('season_id')    
 
-    return jsonify(insert_wordle_day(database, word, wordle_number, date, season_id))
+    return jsonify(insert_wordle_day(database, word, wordle_number, date))
 
 @wordle_days_bp.route('/<int:wordle_day_id>', methods=['PUT'])
 def update_wordle_day(wordle_day_id):
@@ -44,10 +43,9 @@ def update_wordle_day(wordle_day_id):
     word = json_data.get('word')
     wordle_number = json_data.get('wordle_number')
     date = datetime.date(int(date_str[:4]), int(date_str[5:7]), int(date_str[8:10]))
-    season_id = json_data.get('season_id')  
 
-    update_fields = ['word', 'wordle_number', 'date', 'season_id']
-    update_values = [f"'{word}'", wordle_number, f"'{str(date)}'", season_id]
+    update_fields = ['word', 'wordle_number', 'date']
+    update_values = [f"'{word}'", wordle_number, f"'{str(date)}'"]
 
     return jsonify(update_record(database, 'wordle_days', ['id'], [wordle_day_id], update_fields, update_values))
 

@@ -26,12 +26,9 @@ def create_player():
 
     name = json_data.get('name')
     id = json_data.get('id') # This is unique to player, most records dont get their ID passed here
-    wordle_game_id = json_data.get('wordle_game_id')
-
-    print(name, id, wordle_game_id)
 
     # Start and end date format: YYYYMMDD
-    return jsonify(insert_player(database, id, name, wordle_game_id))
+    return jsonify(insert_player(database, id, name))
 
 @players_bp.route('/<int:player_id>', methods=['PUT'])
 def update_player(player_id):
@@ -40,10 +37,9 @@ def update_player(player_id):
     json_data = request.get_json()
 
     name = json_data.get('name')
-    wordle_game_id = json_data.get('wordle_game_id')
 
-    update_fields = [ 'name', 'wordle_game_id']
-    update_values = [ f"'{name}'", wordle_game_id]
+    update_fields = [ 'name']
+    update_values = [ f"'{name}'"]
 
     return jsonify(update_record(database, 'players', ['id'], [player_id], update_fields, update_values))
     

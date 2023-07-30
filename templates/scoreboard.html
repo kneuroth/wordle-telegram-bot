@@ -2,13 +2,14 @@
 <html>
     <style>
         body { background-color: black; }
+        h1 { font-weight: bold; font-family: Arial, sans-serif; color: white; }
         table { width:100%; border-collapse: separate; border-spacing: 4px; font-size: 14px;  font-weight: bold; font-family: Arial, sans-serif; color: white !important; }
         th, td { text-align: center; vertical-align: middle; padding-top: 5px; padding-bottom: 5px; background-color: black; border-width: 2px; }
         .yellow {background-color: #c8b653;}
         .green {background-color: #6ca965;}
     </style>
     <body>
-
+    <h1>Chat: {{data['chat_id']}}</h1>
     <table border="1" align="center" >
     <thead>
         <tr>
@@ -16,7 +17,7 @@
             <th class="yellow">Wordle</th>
             <th class="yellow">Word</th>
             {% for player in data["headers"][3:] %}
-                <th class="green">{{player}}</th>
+                <th class='green'>{{player}}</th>
             {% endfor %}
         </tr>
 

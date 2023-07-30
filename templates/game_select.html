@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Wordle-style Dropdown Menu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e0e0e0;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .search-container {
+            display: inline-block;
+            text-align: left;
+        }
+
+        .search-input {
+            padding: 8px;
+            width: 300px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        .search-list {
+            list-style-type: none;
+            padding: 0;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            margin-top: 5px;
+        }
+
+        .list-item {
+            padding: 8px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        .list-item:hover {
+            background-color: #f1f1f1;
+        }
+        
+        
+    </style>
+</head>
+<body>
+    <h1>Wordle Bot Game Select</h1>
+
+    <div class="search-container">
+        <input type="text" class="search-input" placeholder="Search">
+        <ul class="search-list">
+
+            {% for wordle_game_id in data['wordle_games'] %}
+            <li class="list-item"><a href="{{data['crud_url']}}/scoreboards/{{wordle_game_id}}">{{wordle_game_id}}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+    <script>
+        const searchInput = document.querySelector('.search-input');
+        const listItems = document.querySelectorAll('.list-item');
+
+        searchInput.addEventListener('input', () => {
+            const searchValue = searchInput.value.toLowerCase();
+
+            listItems.forEach(item => {
+                const itemText = item.textContent.toLowerCase();
+                if (itemText.includes(searchValue)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
