@@ -245,9 +245,10 @@ def receive_update():
             player_score_record = insert_player_score(database, score, wordle_day_id, player_id, season_id)
 
         else:
+            pass
             # There already exists a player_score entry, you can't override your submission
             # TODO: Give send message debug config so it doesnt try to send a message when in TEST
-            send_message(f"You already submitted today, {player_name}\n", wordle_game_id)
+            #send_message(f"You already submitted today, {player_name}\n", wordle_game_id)
 
         player_score_id = player_score_record[0]
         print(f"Continuing with player_score {player_score_id}\n")
