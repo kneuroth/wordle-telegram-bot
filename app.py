@@ -160,7 +160,7 @@ def receive_update():
         print(f"Continuing with wordle_game {wordle_game_id}\n")
 
         # Use the wordle_game_id to create the log file handler
-        file_handler = logging.FileHandler(f'logs/{today}-{wordle_game_id}.log')
+        #file_handler = logging.FileHandler(f'logs/{today}-{wordle_game_id}.log')
 
         # Check for player in database, a player record will now be id (taken from telegram) and name 
         # (first_name, also taken from telgram)
