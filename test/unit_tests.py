@@ -121,6 +121,15 @@ class TestDBIO(unittest.TestCase):
         
         self.assertEqual(season2, get_max_season(database, 1))
 
+    def test_get_max_season_many_games(self):
+        season1 = insert_season(database, 3, datetime.date(2023, 3, 9), datetime.date(2023, 4, 9), 1)
+        season2 = insert_season(database, 4, datetime.date(2023, 4, 10), datetime.date(2023, 5, 10), 1)
+        season3 = insert_season(database, 5, datetime.date(2023, 4, 10), datetime.date(2023, 5, 10), 2)
+        season4 = insert_season(database, 6, datetime.date(2023, 4, 10), datetime.date(2023, 5, 10), 2)
+        
+        self.assertEqual(season4, get_max_season(database, 2))
+        
+
     def test_update_record(self):
         player_score = insert_player_score(database, 4, 1, 1999, 1)
         player_score_id = player_score[0]
@@ -383,7 +392,7 @@ class TestImgGen(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-    # suite = unittest.TestSuite()
-    # suite.addTest(TestDBIO('test_get_season_scoreboard'))
+    suite = unittest.TestSuite()
+    #suite.addTest(TestDBIO('test_get_max_season_many_games'))
 
-    # unittest.TextTestRunner().run(suite)
+    unittest.TextTestRunner().run(suite)

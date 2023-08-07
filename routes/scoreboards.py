@@ -17,7 +17,7 @@ load_dotenv()
 def get_scoreboard(chat_id):
     chat_id = int(chat_id)
     season_id = get_max_season(database, chat_id)[0]
-    data, headers = get_season_scoreboard(database, season_id)
+    data, headers = get_season_scoreboard(database, season_id, censored=True)
     totals = get_total_scores(data)
     html_data = {"totals": totals, "headers": headers, "data": data, 'chat_id': chat_id}
     return render_template('scoreboard.html', data=html_data)

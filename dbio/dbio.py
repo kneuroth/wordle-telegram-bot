@@ -253,7 +253,7 @@ def is_last_day_of_season(database, season_id, date):
     """)[0]
     return end_date == str(date)
 
-def get_season_scoreboard(database, season_id):
+def get_season_scoreboard(database, season_id, censored=False):
     # Returns tuple of (records, columns)
     # TODO: Get p.name from players where player_game has season's wordle_game_id
     season_players = query_many(database, f"""
@@ -291,6 +291,14 @@ def get_season_scoreboard(database, season_id):
     
     """)
 
+    if censored:
+        for index, row in enumerate(result[0]):
+            date = datetime.date(int(row[0][0:4]), int(row[0][5:7]), int(row[0][8:10]))
+            if date == datetime.date.today():
+                tup_list = list(row)
+                tup_list[2] = 'XXXXX'
+                result[0][index] = tuple(tup_list)
+
     return result
 
                         # SELECT
@@ -309,8 +317,9 @@ def get_season_by_date(database: str, date: datetime.date, wordle_game_id: int):
     return query_one(database, f"SELECT * FROM seasons WHERE wordle_game_id={wordle_game_id} AND '{date}' BETWEEN start_date AND end_date")
 
 def get_max_season(database: str, wordle_game_id: int):
-    return query_one(database, f"SELECT * FROM seasons WHERE season_number = (SELECT MAX(season_number) FROM seasons WHERE wordle_game_id={wordle_game_id}) ")
-    
+    # Returns the max season of wordle_game_id
+    return query_one(database, f"SELECT * FROM seasons WHERE wordle_game_id={wordle_game_id} ORDER BY season_number DESC LIMIT 1")
+
 def get_non_submittors(database: str, wordle_day_id: int, season_id: int):
     # Returns all players (tuple) who did not yet submit. Returns [] if everyone that exists submitted
     return query_many(database, f"SELECT * FROM players WHERE id NOT IN (SELECT player_id FROM player_scores WHERE wordle_day_id={wordle_day_id} AND season_id={season_id})")[0]
