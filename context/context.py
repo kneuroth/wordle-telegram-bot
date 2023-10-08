@@ -15,9 +15,10 @@ def get_wordle():
                 "X-RapidAPI-Key": os.environ.get('WORDLE_ANSWER_API_KEY'),
                 "X-RapidAPI-Host": os.environ.get('WORDLE_ANSWER_API_HOST')
             }
-        
-        return requests.get(f"{os.environ.get('WORDLE_ANSWER_API_URL')}/today", headers=headers).json()["today"]
-
+        result = requests.get(f"{os.environ.get('WORDLE_ANSWER_API_URL')}/today", headers=headers).json()["today"]
+        if result == '':
+            return "?????"
+        return result
             
     except Exception as err:
         print(err)
