@@ -19,7 +19,7 @@ from send_message import send_image, send_message
 
 from img_gen import generate_scoreboard_image, get_scoreboard_html_and_css, get_total_scores
 
-from routes import wordle_games_bp, seasons_bp, players_bp, player_games_bp, wordle_days_bp, player_scores_bp, scoreboards_bp
+from routes import wordle_games_bp, seasons_bp, players_bp, player_games_bp, player_game_styles_bp, wordle_days_bp, player_scores_bp, scoreboards_bp
 
 app = Flask(__name__)
 
@@ -27,6 +27,7 @@ app.register_blueprint(wordle_games_bp)
 app.register_blueprint(seasons_bp)
 app.register_blueprint(players_bp)
 app.register_blueprint(player_games_bp)
+app.register_blueprint(player_game_styles_bp)
 app.register_blueprint(wordle_days_bp)
 app.register_blueprint(player_scores_bp)
 
@@ -42,11 +43,6 @@ season_length = os.getenv("SEASON_LENGTH")
 crud_url = os.getenv("CRUD_URL")
 
 create_tables(database)
-
-#update_logger = logging.getLogger("updates")
-#valid_submission_logger = logging.getLogger("valid_submissions")
-
-#formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 
 if env == "PROD":
     # Prod environment
@@ -71,24 +67,12 @@ else:
 # TODO: Update readme
 # TODO: What would a first iteration of custom designs look like?
 
-# Get the current wordle_game (tuple)
-# REMOVE
-# wordle_game_record = get_record(database, 'wordle_games', ['chat_id'], [chat_id])
-
-# if wordle_game_record == None:
-#     # There is no wordle_game for this chat_id, so create one
-#     wordle_game_record = insert_wordle_game(database, int(os.getenv("CHAT_ID")))
-
-# wordle_game_id = wordle_game_record[0]
-
-
-
 # TODO: Protect this route somehow?
 # TODO: Test Dealing with tuples in html
 # TODO: fix all routes and /database elements if required. Also add new tables to routes
 @app.get("/database")
 def database_page():
-    record_types = ['wordle_games', 'seasons', 'players', 'player_games', 'wordle_days', 'player_scores']
+    record_types = ['wordle_games', 'seasons', 'players', 'player_games', 'player_game_styles', 'wordle_days', 'player_scores']
     data = { "data":[ {"name": record_type, "record":record_tuples_to_list(get_all_records(database, record_type))} for record_type in record_types], "url": crud_url }
     return render_template('admin_dashboard.html', data=data)
 

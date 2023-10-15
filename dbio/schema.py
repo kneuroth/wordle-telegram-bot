@@ -8,50 +8,6 @@ def create_tables(datebase_name: str):
     # Create a cursor object to execute SQL queries
     cursor = connection.cursor()
 
-    # Define the CREATE TABLE query as a string
-    # create_tables_query = """
-
-    # CREATE TABLE IF NOT EXISTS wordle_games (
-    #     id INTEGER PRIMARY KEY UNIQUE,
-    #     chat_id INTEGER
-    # );
-
-    # CREATE TABLE IF NOT EXISTS seasons (
-    #     id INTEGER PRIMARY KEY UNIQUE,
-    #     season_number INTEGER,
-    #     start_date DATE,
-    #     end_date DATE,
-    #     wordle_game_id INTEGER,
-    #     FOREIGN KEY (wordle_game_id) REFERENCES wordle_games(id)
-    # );
-
-    # CREATE TABLE IF NOT EXISTS players (
-    #     id INTEGER,
-    #     name TEXT,
-    #     wordle_game_id INTEGER,
-    #     PRIMARY KEY (id, wordle_game_id),
-    #     FOREIGN KEY (wordle_game_id) REFERENCES wordle_games(id)
-    # );
-
-    # CREATE TABLE IF NOT EXISTS wordle_days (
-    #     id INTEGER PRIMARY KEY UNIQUE,
-    #     word TEXT,
-    #     wordle_number INTEGER,
-    #     date DATE,
-    #     season_id INTEGER,
-    #     FOREIGN KEY (season_id) REFERENCES seasons(id)
-    # );
-
-    # CREATE TABLE IF NOT EXISTS player_scores (
-    #     id INTEGER PRIMARY KEY UNIQUE,
-    #     score INTEGER,
-    #     wordle_day_id INTEGER,
-    #     player_id INTEGER,
-    #     FOREIGN KEY (wordle_day_id) REFERENCES wordle_days(id),
-    #     FOREIGN KEY (player_id) REFERENCES players(id)
-    # );
-    # """
-
     new_create_tables_query = """
 
     CREATE TABLE IF NOT EXISTS wordle_games (
@@ -78,6 +34,13 @@ def create_tables(datebase_name: str):
         wordle_game_id INTEGER,
         FOREIGN KEY (player_id) REFERENCES players(id),
         FOREIGN KEY (wordle_game_id) REFERENCES wordle_games(id)
+    );
+
+    CREATE TABLE IF NOT EXISTS player_game_styles (
+        id INTEGER PRIMARY KEY UNIQUE,
+        style_str TEXT,
+        player_game_id INTEGER,
+        FOREIGN KEY (player_game_id) REFERENCES player_games(id)
     );
 
     CREATE TABLE IF NOT EXISTS wordle_days (

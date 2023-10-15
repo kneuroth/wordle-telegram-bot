@@ -16,7 +16,7 @@ from context import get_wordle_number, get_wordle
 
 from img_gen import generate_scoreboard_image
 
-from dbio import create_tables, drop_tables, insert_wordle_game, insert_player, insert_player_game, insert_season, insert_wordle_day, insert_player_score,get_record, is_first_day_of_season, get_season_by_date, get_max_season, update_record, get_non_submittors, get_season_scoreboard, get_season_winners
+from dbio import create_tables, drop_tables, insert_wordle_game, insert_player, insert_player_game, insert_player_game_style, insert_season, insert_wordle_day, insert_player_score,get_record, is_first_day_of_season, get_season_by_date, get_max_season, update_record, get_non_submittors, get_season_scoreboard, get_season_winners
 
 from send_message import send_message, send_image
 
@@ -79,6 +79,9 @@ class TestDBIO(unittest.TestCase):
 
     def test_insert_player_game(self):
         self.assertEqual((1, 1, 1), insert_player_game(database, 1, 1))
+
+    def test_insert_player_game_style(self):
+        self.assertEqual((1, 'whatever', 1), insert_player_game_style(database, 'whatever', 1))
     
     def test_insert_wordle_day(self):
         self.assertEqual((1, 'WORDLE', 400, '2023-03-09'), insert_wordle_day(database, 'WORDLE', 400, datetime.date(2023, 3, 9)))
@@ -393,6 +396,6 @@ class TestImgGen(unittest.TestCase):
 if __name__ == '__main__':
     #unittest.main()
     suite = unittest.TestSuite()
-    suite.addTest(TestContext('test_get_wordle'))
+    suite.addTest(TestDBIO('test_insert_player_game_style'))
 
     unittest.TextTestRunner().run(suite)

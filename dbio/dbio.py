@@ -179,6 +179,10 @@ def insert_player_game(database: str, player_id: int, wordle_game_id: int):
     # Adds a player game into the player_games table.
     return insert_record(database, 'player_games', ('player_id', 'wordle_game_id'), (player_id, wordle_game_id))
 
+def insert_player_game_style(database: str, style_str: str, player_game_id: int):
+    # Adds a player game style into the player_game_styles table.
+    return insert_record(database, 'player_game_styles', ('style_str', 'player_game_id'), (style_str, player_game_id))
+    
 def insert_wordle_day(database: str, word: str, wordle_number: int, date: datetime.date):
     # Adds a wordle day into the wordle_days table. Cast date to str. See insert_record for more info
     return insert_record(database, 'wordle_days', ('word', 'wordle_number', 'date'), (word, wordle_number, str(date)))
@@ -216,6 +220,7 @@ def update_record(database: str, table_name: str, id_fields: list, id_values: li
     set_clause = " , ".join([f"{field}={value}" for field, value in zip(update_fields, update_values)])
     where_clause = " AND ".join([f"{field}={value}" for field, value in zip(id_fields, id_values)])
     query = f"UPDATE {table_name} SET {set_clause} WHERE {where_clause}"
+    print(query)
     try:
 
         # execute an UPDATE query to modify a record
