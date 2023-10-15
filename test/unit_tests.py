@@ -391,8 +391,8 @@ class TestImgGen(unittest.TestCase):
         self.assertEqual(f"/home/kelly/Projects/wordle-telegram-bot/scoreboard-{str(today)}-1234-S1.png", generate_scoreboard_image(database, wordle_game[0], season1[0]))
 
 if __name__ == '__main__':
-    unittest.main()
+    #unittest.main()
     suite = unittest.TestSuite()
-    #suite.addTest(TestDBIO('test_get_max_season_many_games'))
+    suite.addTest(TestContext('test_get_wordle'))
 
     unittest.TextTestRunner().run(suite)
