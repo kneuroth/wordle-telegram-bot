@@ -396,6 +396,6 @@ class TestImgGen(unittest.TestCase):
 if __name__ == '__main__':
     #unittest.main()
     suite = unittest.TestSuite()
-    suite.addTest(TestDBIO('test_insert_player_game_style'))
+    suite.addTest(TestContext('test_get_wordle'))
 
     unittest.TextTestRunner().run(suite)

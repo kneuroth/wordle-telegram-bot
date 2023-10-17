@@ -39,7 +39,8 @@ def get_wordle():
 
             soup = BeautifulSoup(response.text, 'html.parser')
             soup_text = soup.get_text()
-            index = soup_text[:].find('2023/10/15')
+            today = datetime.date.today()
+            index = soup_text[:].find(f'{today.year}/{today.month}/{today.day}')
             wordle = soup_text[index: index + 21].split(' ')[2]
             return wordle
     
