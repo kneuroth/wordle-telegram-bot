@@ -41,7 +41,7 @@ def get_wordle():
             soup_text = soup.get_text()
             today = datetime.date.today()
             index = soup_text[:].find(f'{today.year}/{today.month}/{today.day}')
-            wordle = soup_text[index: index + 21].split(' ')[2]
+            wordle = soup_text[index: index + 22].split(' ')[2]
             return wordle
     
         else:
