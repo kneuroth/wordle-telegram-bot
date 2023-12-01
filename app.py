@@ -284,8 +284,7 @@ def day_end():
                 print("There wasn't a season yesterday, its fine dont have to do anything.")
                 break
 
-            yesterday_season_id = yesterday_season_record[1]
-            print(f"Continuing with season {yesterday_season_id}\n")
+            yesterday_season_id = yesterday_season_record[0]
 
             print(f"Continuing with season_id {yesterday_season_id}")
             # Check if there is a current wordle_day for yesterday

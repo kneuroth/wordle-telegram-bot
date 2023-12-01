@@ -252,6 +252,8 @@ class TestDBIO(unittest.TestCase):
         player2 = insert_player(database, 2, 'Player 2')
         player3 = insert_player(database, 3, 'Player 3')
 
+        player4 = insert_player(database, 4, 'Player 4')
+
         today = datetime.date.today()
 
         one_day_delta = datetime.timedelta(days=1)
@@ -276,6 +278,7 @@ class TestDBIO(unittest.TestCase):
         for wordle_day in [wordle_day_1, wordle_day_2, wordle_day_3, wordle_day_4]:
             for player in [player1, player2, player3]:
                 insert_player_score(database, player[0], wordle_day[0], player[0], 1)
+            insert_player_score(database, 1, wordle_day[0], player4[0], 2)
         self.assertEqual(['Player 1'], get_season_winners(database, 1))
 
     def test_get_season_winner_3_way_tie(self):
@@ -396,6 +399,6 @@ class TestImgGen(unittest.TestCase):
 if __name__ == '__main__':
     #unittest.main()
     suite = unittest.TestSuite()
-    suite.addTest(TestContext('test_get_wordle'))
+    suite.addTest(TestDBIO('test_get_season_winner'))
 
     unittest.TextTestRunner().run(suite)
