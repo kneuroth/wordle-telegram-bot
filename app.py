@@ -166,7 +166,7 @@ def receive_update():
             player_game_record = insert_player_game(database, player_id, wordle_game_id)
             print(f"Player_game {player_game_record[0]} created")
         else:
-            print(f"Player_game {player_game_id} found")
+            print(f"Player_game {player_game_record[0]} found")
 
         player_game_id = player_game_record[0]
 
@@ -192,7 +192,7 @@ def receive_update():
             print(f"Season {new_season_num} for wordle_game {wordle_game_id} created")
             season_record = insert_season(database, new_season_num, today, today + datetime.timedelta(days=int(season_length) - 1), wordle_game_id)
         else:
-            print(f"Season {season_id} found")
+            print(f"Season {season_record[0]} found")
 
         season_id = season_record[0]
 
@@ -241,7 +241,7 @@ def receive_update():
             # There already exists a player_score entry, you can't override your submission
             # TODO: Give send message debug config so it doesnt try to send a message when in TEST
             #send_message(f"You already submitted today, {player_name}\n", wordle_game_id)
-            print(f"Player_score {player_score_id} found")
+            print(f"Player_score {player_score_record[0]} found")
 
         player_score_id = player_score_record[0]
 
