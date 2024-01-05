@@ -153,27 +153,32 @@ class TestDBIO(unittest.TestCase):
     def test_get_non_submitors(self):
 
         # Create a wordle game
-        wordle_game = insert_wordle_game(database, 1234)
+        wordle_game_1 = insert_wordle_game(database, 1234)
+        wordle_game_2 = insert_wordle_game(database, 5678)
 
         # Create players to test with
         player1 = insert_player(database, 101, 'Player 1')
         player2 = insert_player(database, 102, 'Player 2')
         player3 = insert_player(database, 103, 'Player 3')
 
+        player4 = insert_player(database, 104, 'Player 4')
+
         # Insert player_game
-        player_game1 = insert_player_game(database, player1[0], wordle_game[0])
+        player_game1 = insert_player_game(database, player1[0], wordle_game_1[0])
+        player_game2 = insert_player_game(database, player2[0], wordle_game_1[0])
+        player_game3 = insert_player_game(database, player3[0], wordle_game_1[0])
 
         # Create wordle_day and extract the id
         wordle_day = insert_wordle_day(database, "WORDLE", 555, datetime.date(2023, 3, 10))
         wordle_day_id = wordle_day[0]
 
         # Insert season
-        season1 = insert_season(database, 1, datetime.date(2023, 7, 7), datetime.date(2023, 7, 14), wordle_game[0])
-
+        season1 = insert_season(database, 1, datetime.date(2023, 7, 7), datetime.date(2023, 7, 14), wordle_game_1[0])
+        season2 = insert_season(database, 2, datetime.date(2023, 7, 7), datetime.date(2023, 7, 14), wordle_game_2[0])
         # Player1 is the only one to submit
         player1_score = insert_player_score(database, 5, wordle_day[0], player1[0], season1[0])
 
-        self.assertEqual([player2, player3], get_non_submittors(database, wordle_day_id, season1[0]))
+        self.assertEqual([(player2[0],), (player3[0],)], get_non_submittors(database, wordle_day_id, season1[0], wordle_game_1[0]))
 
     def test_get_non_submittors_everyone_submitted(self):
         # Create wordle game
@@ -399,6 +404,6 @@ class TestImgGen(unittest.TestCase):
 if __name__ == '__main__':
     #unittest.main()
     suite = unittest.TestSuite()
-    suite.addTest(TestDBIO('test_get_season_winner'))
+    suite.addTest(TestDBIO('test_get_non_submitors'))
 
     unittest.TextTestRunner().run(suite)

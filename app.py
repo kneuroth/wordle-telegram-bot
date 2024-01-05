@@ -87,7 +87,6 @@ def record_tuples_to_list(records):
 
 @app.get("/")
 def main_page():
-    # TODO: Way to choose wordle_game, now is only 1
     wordle_games = [game_record[0] for game_record in get_all_records(database, 'wordle_games')[0]]
     data = {
         "wordle_games": wordle_games,
@@ -102,17 +101,14 @@ def receive_update():
     # These are messages our bot is aware of.
 
     today = datetime.date.today()
-    #update_file_handler = logging.FileHandler(f"logs/{today}-updates")
-    #update_logger.addHandler(update_file_handler)
-    # TODO NEXT: Design update logs
 
     print("Message received:", request.json)
-
+    ########
+    # Message validation
+    # If this is a valid wordle submission for today,
+    # move on to wordle_game validation
+    ######## 
     if is_valid_score_submission(request.json):
-        # Message to bot is from the right chat and is a valid wordle submission for today
-
-        # Init useful variables to control game logic
-        # TODO: Change schema of wordle_game so that it's ID is the chatID same way it is for player
         player_id = request.json["message"]["from"]["id"]
         player_name = request.json["message"]["from"]["first_name"]
         text = request.json["message"]["text"]
@@ -122,55 +118,63 @@ def receive_update():
             score = 7
         score = int(score)
 
-        # TODO Design valid submission logs
-        #valid_submission_handler = logging.FileHandler(f"logs/{today}-{chat_id}.log")
-
         print(f"Message received {today}:")
         print(f"Chat:{chat_id}")
         print(f"From: {player_name}:{player_id}")
         print(f"Text: {text}")
         print(f"Score: {score}\n")
 
-        # Check if there is a wordle_game_record
+        #########
+        # WORDLE_GAME validation
+        # If there is no wordle_game based on this chat_id,
+        # create one. Otherwise move to player validation
+        #########
         print("Checking if wordle_game exists for this chat")
         wordle_game_record = get_record(database, 'wordle_games', ['id'], [chat_id])
         if wordle_game_record == None:
-            print("No wordle_game exists, creating one")
-            # There is no wordle_game for this chat_id, so create one
             wordle_game_record = insert_wordle_game(database, chat_id)
             print(f"Wordle_game {wordle_game_record[0]} created")
+        else:
+            print(f"Wordle_game {wordle_game_id} found")
 
         wordle_game_id = wordle_game_record[0]
-        print(f"Continuing with wordle_game {wordle_game_id}\n")
 
-        # Use the wordle_game_id to create the log file handler
-        #file_handler = logging.FileHandler(f'logs/{today}-{wordle_game_id}.log')
-
-        # Check for player in database, a player record will now be id (taken from telegram) and name 
-        # (first_name, also taken from telgram)
+        #########
+        # PLAYER check
+        # If there is no player record, create one. Otherwise move to player_game validation,
+        # which ties a player to a wordle_game
+        #########
         print(f"Checking for player {player_name}:{player_id} in database")
         player_record = get_record(database, 'players', ['id'], [player_id])
         if player_record == None:
-            print(f"player {player_name}:{player_id} not found. Creating entry now.")
             # This player is not in the players table yet, insert
             player_record = insert_player(database, player_id, player_name)
-            print(f"player {player_record[1]}:{player_record[0]} created.")
+            print(f"Player {player_record[1]}:{player_record[0]} created")
+        else:
+            print(f"Player {player_record[1]}:{player_record[0]} found")
 
         player_id = player_record[0]
-        print(f"Continuing with player {player_record[1]}:{player_record[0]}\n")
 
-        # TODO: Then check for player_game in database with player[id] AND wordle_game_id
+
+        #########
+        # PLAYER_GAME check
+        # If there is no player_game record, create one. Otherwise move to season validation.
+        #########
         print(f"Checking for player_game with {player_name}:{player_id} and wordle_game {wordle_game_id} in database")
         player_game_record = get_record(database, 'player_games', ['player_id', 'wordle_game_id'], [player_id, wordle_game_id])
         if player_game_record == None:
-            print(f"player_game with {player_name}:{player_id} and wordle_game {wordle_game_id} not found")
             player_game_record = insert_player_game(database, player_id, wordle_game_id)
-            print(f"player_game {player_game_record[0]} created with player {player_name}:{player_id} and wordle_game {wordle_game_id}")
+            print(f"Player_game {player_game_record[0]} created")
+        else:
+            print(f"Player_game {player_game_id} found")
 
         player_game_id = player_game_record[0]
-        print(f"Continuing with player_game {player_game_id}\n")
 
-        # Check if there is a current season for this wordle_game_id
+        #########
+        # SEASON validation
+        # If there is no current season, find the max season for this wordle_game 
+        # and create the next season. If there is a season, move to wordle_day validation
+        #########
         print("Checking for current season")
         season_record = get_season_by_date(database, today, wordle_game_id)
         if season_record == None:
@@ -185,22 +189,24 @@ def receive_update():
                 new_season_num = latest_season[1] + 1
 
             # Create a new season
-            print(f"Creating season number {new_season_num}")
+            print(f"Season {new_season_num} for wordle_game {wordle_game_id} created")
             season_record = insert_season(database, new_season_num, today, today + datetime.timedelta(days=int(season_length) - 1), wordle_game_id)
-            
-        season_id = season_record[0]
-        print(f"Continuing with season {season_id}\n")
+        else:
+            print(f"Season {season_id} found")
 
-        # Check if there is a current wordle_day for today
-        # TODO: Get rid of wordle_day's 'season' identifier, have a global wordle_day table
-        # which is accessed by all player_scores
-        print(f"Checking wordle_day for season {season_id}")
+        season_id = season_record[0]
+
+        #########
+        # WORDLE_DAY validation
+        # If there is not a wordle_day yet, create one. If it is the same as yesterday's,
+        # don't insert into the database
+        #########
+        print(f"Checking wordle_day for season {today}")
         wordle_day_record = get_record(database, 'wordle_days', ['date'], [ f"'{today}'"])
         if wordle_day_record == None:
             # There is no wordle_day for today yet
-            # TODO: THere is no wordle_day at all yet, remove season reference
-            print(f"No wordle_day for {today} in database. Creating entry")
             wordle_day_record = insert_wordle_day(database, get_wordle(), get_wordle_number(today), today)
+            print(f"Wordle_day {wordle_day_record[0]} created")
         else:
             # Check if the get_wordle is the same as previous day wordle_id, if so might need to run get_wordle again (if there is a prev day this season )
             last_wordle_day_record = get_record(database, 'wordle_days', ['date'], [f"'{today - datetime.timedelta(days=1)}'"])
@@ -213,33 +219,40 @@ def receive_update():
                     update_values = [f"'{get_wordle()}'"]
 
                     update_record(database, 'wordle_days', ['id'], [wordle_day_record[0]], update_fields, update_values)
-                else:
-                    # The wordles aren't the same nor is today's '?????'
-                    pass
 
         wordle_day_id = wordle_day_record[0]
         print(f"Continuing with wordle_day {wordle_day_id}\n")
 
+
+        #########
+        # PLAYER_SCORE validation
+        # If there is no player score for this day in this season for this player
+        # insert one. Else don't override the current value. This means we only accept the first submission
+        #########
         # Now in the database we have a player, a current season, and a wordle day
         # TODO: Should now include season_id to identify which season the player_score is in
         print(f"Making sure there is no player_score for {player_name}:{player_id} for {today} in season {season_id}")
         player_score_record = get_record(database, 'player_scores', ['wordle_day_id', 'player_id', 'season_id'], [wordle_day_id, player_id, season_id])
         if player_score_record == None:
-            print("No player_score found, inserting score.")
             player_score_record = insert_player_score(database, score, wordle_day_id, player_id, season_id)
-
+            print(f"Player score {player_score_record[0]} created")
         else:
             pass
             # There already exists a player_score entry, you can't override your submission
             # TODO: Give send message debug config so it doesnt try to send a message when in TEST
             #send_message(f"You already submitted today, {player_name}\n", wordle_game_id)
+            print(f"Player_score {player_score_id} found")
 
         player_score_id = player_score_record[0]
-        print(f"Continuing with player_score {player_score_id}\n")
 
+        #########
+        # END OF SUBMISSIONS validation
+        # If everyone has submitted and it's not the first day of the season 
+        # then send the scoreboard. Don't send if it's the first day of the season.
+        #########
         # Check if everyone has submitted
         print("Checking if everyone has submitted now")
-        non_submittors = get_non_submittors(database, wordle_day_id, season_id)
+        non_submittors = get_non_submittors(database, wordle_day_id, season_id, wordle_day_id)
         if len(non_submittors) == 0:
             # Everyone has submitted
             print(f"All players in season {season_id} submitted. Making sure it isn't the first day of the season")
@@ -259,6 +272,8 @@ def receive_update():
                 send_message(f"Congrats on winning, {' and '.join(get_season_winners(database, season_id))}", wordle_game_id)
             else:
                 print("It's not the last day of the season so we're done here.")
+        else:
+            print(f"Oh shit, these players didnt submit yet: {str(non_submittors)}")
     return "Processed"
 
 @app.get("/day_end")
@@ -303,7 +318,7 @@ def day_end():
 
             # Check if everyone submitted yesterday
             print(f"Checking if anyone in wordle_game {wordle_game_id} didnt submit yesterday")
-            non_submittors = get_non_submittors(database, yesterday_wordle_day_id, yesterday_season_id)
+            non_submittors = get_non_submittors(database, yesterday_wordle_day_id, yesterday_season_id, wordle_game_id)
 
             for non_submittor in non_submittors:
                 print(f"Oh shit, {non_submittor[1]} didnt submit, giving score of 8")

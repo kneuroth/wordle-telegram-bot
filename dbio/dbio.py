@@ -325,9 +325,9 @@ def get_max_season(database: str, wordle_game_id: int):
     # Returns the max season of wordle_game_id
     return query_one(database, f"SELECT * FROM seasons WHERE wordle_game_id={wordle_game_id} ORDER BY season_number DESC LIMIT 1")
 
-def get_non_submittors(database: str, wordle_day_id: int, season_id: int):
+def get_non_submittors(database: str, wordle_day_id: int, season_id: int, wordle_game_id: int):
     # Returns all players (tuple) who did not yet submit. Returns [] if everyone that exists submitted
-    return query_many(database, f"SELECT * FROM players WHERE id NOT IN (SELECT player_id FROM player_scores WHERE wordle_day_id={wordle_day_id} AND season_id={season_id})")[0]
+    return query_many(database, f"SELECT player_id FROM player_games WHERE wordle_game_id={wordle_game_id} AND player_id NOT IN (SELECT player_id FROM player_scores WHERE wordle_day_id={wordle_day_id} AND season_id={season_id})")[0]
 
 def get_season_winners(database: str, season_id: int):
     # Retuns all players (player name strings) who have the highest score, you will have to check if the season is over
