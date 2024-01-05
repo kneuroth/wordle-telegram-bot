@@ -135,7 +135,7 @@ def receive_update():
             wordle_game_record = insert_wordle_game(database, chat_id)
             print(f"Wordle_game {wordle_game_record[0]} created")
         else:
-            print(f"Wordle_game {wordle_game_id} found")
+            print(f"Wordle_game {wordle_game_record[0]} found")
 
         wordle_game_id = wordle_game_record[0]
 
