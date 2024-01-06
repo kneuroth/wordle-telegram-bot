@@ -252,7 +252,7 @@ def receive_update():
         #########
         # Check if everyone has submitted
         print("Checking if everyone has submitted now")
-        non_submittors = get_non_submittors(database, wordle_day_id, season_id, wordle_day_id)
+        non_submittors = get_non_submittors(database, wordle_day_id, season_id, wordle_game_id)
         if len(non_submittors) == 0:
             # Everyone has submitted
             print(f"All players in season {season_id} submitted. Making sure it isn't the first day of the season")
@@ -321,7 +321,7 @@ def day_end():
             non_submittors = get_non_submittors(database, yesterday_wordle_day_id, yesterday_season_id, wordle_game_id)
 
             for non_submittor in non_submittors:
-                print(f"Oh shit, {non_submittor[1]} didnt submit, giving score of 8")
+                print(f"Oh shit, {non_submittor} didnt submit, giving score of 8")
                 insert_player_score(database, 8, yesterday_wordle_day_id, non_submittor[0], yesterday_season_id)
 
             # 8's have been supplied
