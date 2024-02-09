@@ -294,64 +294,65 @@ def day_end():
             # There should be one, but if for some reason not, check if there is a season for yesterday
             print(f"Checking if there was a season for yesterday")
             yesterday_season_record = get_season_by_date(database, yesterday, wordle_game_id)
-            if yesterday_season_record == None:
-                # There is no season with yesterday in it yet
-                print("There wasn't a season yesterday, its fine dont have to do anything.")
-                break
+            if yesterday_season_record != None:
+               # There was a season yesterday
 
-            yesterday_season_id = yesterday_season_record[0]
+                yesterday_season_id = yesterday_season_record[0]
 
-            print(f"Continuing with season_id {yesterday_season_id}")
-            # Check if there is a current wordle_day for yesterday
-            # This covers the event that no one submitted the whole day, 
-            # thus no wordle_day entry was created.
-            print("Checking if there was a wordle_day for yesterday")
-            yesterday_wordle_day_record = get_record(database, 'wordle_days', ['date'], [f"'{yesterday}'"])
-            if yesterday_wordle_day_record == None:
-                print("No wordle day found, inserting the record. Won't be able to find the wordle word")
-                # There is no wordle_day for yesterday yet 
-                # Can't get wordle for yesterday so leave as ?????
-                yesterday_wordle_day_record = insert_wordle_day(database, "?????", get_wordle_number(yesterday), yesterday)
+                print(f"Continuing with season_id {yesterday_season_id}")
+                # Check if there is a current wordle_day for yesterday
+                # This covers the event that no one submitted the whole day, 
+                # thus no wordle_day entry was created.
+                print("Checking if there was a wordle_day for yesterday")
+                yesterday_wordle_day_record = get_record(database, 'wordle_days', ['date'], [f"'{yesterday}'"])
+                if yesterday_wordle_day_record == None:
+                    print("No wordle day found, inserting the record. Won't be able to find the wordle word")
+                    # There is no wordle_day for yesterday yet 
+                    # Can't get wordle for yesterday so leave as ?????
+                    yesterday_wordle_day_record = insert_wordle_day(database, "?????", get_wordle_number(yesterday), yesterday)
 
-            yesterday_wordle_day_id = yesterday_wordle_day_record[0]
-            print(f"Continuing with wordle_day {yesterday_wordle_day_id}\n")
+                yesterday_wordle_day_id = yesterday_wordle_day_record[0]
+                print(f"Continuing with wordle_day {yesterday_wordle_day_id}\n")
 
-            # Check if everyone submitted yesterday
-            print(f"Checking if anyone in wordle_game {wordle_game_id} didnt submit yesterday")
-            non_submittors = get_non_submittors(database, yesterday_wordle_day_id, yesterday_season_id, wordle_game_id)
+                # Check if everyone submitted yesterday
+                print(f"Checking if anyone in wordle_game {wordle_game_id} didnt submit yesterday")
+                non_submittors = get_non_submittors(database, yesterday_wordle_day_id, yesterday_season_id, wordle_game_id)
 
-            for non_submittor in non_submittors:
-                print(f"Oh shit, {non_submittor} didnt submit, giving score of 8")
-                insert_player_score(database, 8, yesterday_wordle_day_id, non_submittor[0], yesterday_season_id)
+                for non_submittor in non_submittors:
+                    print(f"Oh shit, {non_submittor} didnt submit, giving score of 8")
+                    insert_player_score(database, 8, yesterday_wordle_day_id, non_submittor[0], yesterday_season_id)
 
-            # 8's have been supplied
-            # Don't send the scoreboard if there where no non-submittors 
-            # Or if there where no non-submittors and its the first day, send the scoreboard
-            # This is confusing and could be a OR but it's separated for readability and logical differences in conditions
-            was_first_day = is_first_day_of_season(database, yesterday_season_id, yesterday)
-            print("Checking if it was the first day of the season that just ended.")
-            if was_first_day:
-                print("It was the first day of the season, sending scoreboard")
-                # It is the end of the first day so we have to send scoreboard regardless of how many people submitted
-                image = generate_scoreboard_image(database, wordle_game_id, yesterday_season_id)
-                send_image(image, wordle_game_id)
-            elif len(non_submittors) > 0:
-                print("It wasnt the first day of the season but some people didnt submit, sending the scoreboard")
-                # It's not the first day and at least 1 person didnt submit so we have to send the scoreboard
-                image = generate_scoreboard_image(database, wordle_game_id, yesterday_season_id)
-                send_image(image, wordle_game_id)
+                # 8's have been supplied
+                # Don't send the scoreboard if there where no non-submittors 
+                # Or if there where no non-submittors and its the first day, send the scoreboard
+                # This is confusing and could be a OR but it's separated for readability and logical differences in conditions
+                was_first_day = is_first_day_of_season(database, yesterday_season_id, yesterday)
+                print("Checking if it was the first day of the season that just ended.")
+                if was_first_day:
+                    print("It was the first day of the season, sending scoreboard")
+                    # It is the end of the first day so we have to send scoreboard regardless of how many people submitted
+                    image = generate_scoreboard_image(database, wordle_game_id, yesterday_season_id)
+                    send_image(image, wordle_game_id)
+                elif len(non_submittors) > 0:
+                    print("It wasnt the first day of the season but some people didnt submit, sending the scoreboard")
+                    # It's not the first day and at least 1 person didnt submit so we have to send the scoreboard
+                    image = generate_scoreboard_image(database, wordle_game_id, yesterday_season_id)
+                    send_image(image, wordle_game_id)
+                else:
+                    # It is not the end of the first day and everyone submitted, so the last submission yesterday
+                    # would have sent the scoreboard
+                    print("It wasn't the first day of the season and everyone submitted so not sending scoreboard because it should have already sent")
+                    pass
+                
+                print("Checking if it's the last day of the season")
+                if is_last_day_of_season(database, yesterday_season_id, yesterday) and len(non_submittors) > 0:
+                    # Yesterday was the last day in the season
+                    print("It was the last day of the season, sending congrats to everyone who won")
+                    message = f"Congrats on winning, {' and '.join(get_season_winners(database, yesterday_season_id))}"
+                    send_message(message, wordle_game_id)
             else:
-                # It is not the end of the first day and everyone submitted, so the last submission yesterday
-                # would have sent the scoreboard
-                print("It wasn't the first day of the season and everyone submitted so not sending scoreboard because it should have already sent")
-                pass
-            
-            print("Checking if it's the last day of the season")
-            if is_last_day_of_season(database, yesterday_season_id, yesterday) and len(non_submittors) > 0:
-                # Yesterday was the last day in the season
-                print("It was the last day of the season, sending congrats to everyone who won")
-                message = f"Congrats on winning, {' and '.join(get_season_winners(database, yesterday_season_id))}"
-                send_message(message, wordle_game_id)
+                 # There is no season with yesterday in it yet
+                print("There wasn't a season yesterday, its fine dont have to do anything.")
 
     return "Done"#(images, messages)
 
