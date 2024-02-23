@@ -83,6 +83,24 @@ def record_tuples_to_list(records):
         list_records.append(list(record))
     return list_records, records[1]
 
+@app.get("/add_wordle")
+def add_wordle_page():
+    return render_template('add_wordle.html')
+
+@app.post("/add_wordle")
+def add_wordle():
+    try:
+        data = request.get_json()
+        word = data.get('word').upper()
+        if len(word) != 5:
+            return {'error': 'Word must be exactly 5 characters long.'}, 400
+
+        today = datetime.date.today()
+        insert_wordle_day(database, word, get_wordle_number(today), today)
+
+        return {'message': 'Word submitted successfully.'}, 200
+    except:
+        return {'error': 'An error occurred while processing the word submission.'}, 500
 
 
 @app.get("/")
