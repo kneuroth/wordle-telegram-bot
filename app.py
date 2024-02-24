@@ -96,10 +96,23 @@ def add_wordle():
             return {'error': 'Word must be exactly 5 characters long.'}, 400
 
         today = datetime.date.today()
-        insert_wordle_day(database, word, get_wordle_number(today), today)
+        wordle_day_record = get_record(database, 'wordle_days', ['date'], [ f"'{today}'"])
+
+        print(wordle_day_record)
+
+        if wordle_day_record == None:
+            # If there is no wordle_day currently, insert it
+            insert_wordle_day(database, word, get_wordle_number(today), today)
+        else:
+            # else updated the word for the current wordle_day
+            update_fields = ['word']
+            update_values = [f"'{word}'"]
+
+            update_record(database, 'wordle_days', ['id'], [wordle_day_record[0]], update_fields, update_values)
 
         return {'message': 'Word submitted successfully.'}, 200
-    except:
+    except Exception as e:
+        print(e)
         return {'error': 'An error occurred while processing the word submission.'}, 500
 
 
