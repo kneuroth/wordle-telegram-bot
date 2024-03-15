@@ -8,7 +8,7 @@ import sys
 
 import logging
 
-from validation.update_validation import is_valid_score_submission ,is_valid_signup_message
+from validation.update_validation import is_valid_score_submission
 
 from context import get_wordle_number, get_wordle
 
@@ -97,8 +97,6 @@ def add_wordle():
 
         today = datetime.date.today()
         wordle_day_record = get_record(database, 'wordle_days', ['date'], [ f"'{today}'"])
-
-        print(wordle_day_record)
 
         if wordle_day_record == None:
             # If there is no wordle_day currently, insert it
