@@ -59,7 +59,7 @@ def is_valid_message(update):
 
 def is_wordle_submission(text):
     # Validates that the text of a message follows Wordle submission structure
-    pattern = re.compile("^Wordle [0-9]{3,4} [1-6,X]/6")
+    pattern = re.compile("^Wordle [0-9],[0-9]{3} [1-6,X]/6")
     return bool(re.match(pattern, text))
 
 def is_todays_wordle_number(text):
@@ -69,38 +69,6 @@ def is_todays_wordle_number(text):
 
 # -------EXPORTED FUNCTIONS--------#
 
-def is_valid_signup_message(update):
-    """
-    Verify weather the received Telegram update is a valid signup message indicating
-    that the user wants to sign up for the Wordle game 
-
-    Parameters
-    ----------
-    update : object
-        Telegram update object
-
-    Returns
-    -------
-    Boolean
-        Returns True if the given update:
-        - Has valid Telegram update message schema
-        - Is from the correct group chat
-        - Has the correct signup string (specified by the SIGNUP_PHRASE env variable)
-        Returns False otherwise
-
-    Raises
-    ------
-    None
-
-    Notes
-    -----
-    None
-    """
-    signup_phrase = os.getenv("SIGNUP_PHRASE")
-    return is_valid_message(update) and update["message"]["text"] == signup_phrase
-
-# TODO is valid score submission. returns true if it's a valid update object, 
-# its from the correct chat, the format of the text is correct, it's from today's wordle
 def is_valid_score_submission(update):
     """
     Verify weather the received Telegram update is a valid score submission message

@@ -28,7 +28,7 @@ class TestValidation(unittest.TestCase):
     def test_submission_scores(self):
         # Tests scores 0-7 with properly formatted Wordle submission
         # Expecting 0 and 7 to return False, all else should return True
-        result = [is_wordle_submission(f"Wordle 5465 {i}/6") for i in range(0,8)]
+        result = [is_wordle_submission(f"Wordle 5,465 {i}/6") for i in range(0,8)]
         self.assertEqual(result, [False, True, True, True, True, True, True, False])
 
     def test_bad_text_format(self):
@@ -404,6 +404,6 @@ class TestImgGen(unittest.TestCase):
 if __name__ == '__main__':
     #unittest.main()
     suite = unittest.TestSuite()
-    suite.addTest(TestDBIO('test_get_non_submitors'))
+    suite.addTest(TestValidation('test_submission_scores'))
 
     unittest.TextTestRunner().run(suite)
