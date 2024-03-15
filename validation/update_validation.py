@@ -64,6 +64,7 @@ def is_wordle_submission(text):
 
 def is_todays_wordle_number(text):
     # Validates that the Wordle number (number after the word Wordle) is today's wordle number
+    text = text.replace(",", "")
     return int(text[7:11]) == get_wordle_number(datetime.date.today())
 
 

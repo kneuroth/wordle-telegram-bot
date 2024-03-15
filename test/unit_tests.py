@@ -10,7 +10,7 @@ import string
 project_path = os.path.abspath(os.path.dirname(__file__))
 parent_path = os.path.abspath(os.path.join(project_path, os.pardir))
 
-from validation import is_wordle_submission
+from validation import is_wordle_submission, is_todays_wordle_number
 
 from context import get_wordle_number, get_wordle
 
@@ -30,6 +30,10 @@ class TestValidation(unittest.TestCase):
         # Expecting 0 and 7 to return False, all else should return True
         result = [is_wordle_submission(f"Wordle 5,465 {i}/6") for i in range(0,8)]
         self.assertEqual(result, [False, True, True, True, True, True, True, False])
+
+    def test_is_todays_wordle_number(self):
+        result = is_todays_wordle_number("Wordle 1,000 L 1/6")
+        self.assertEqual(result, True)
 
     def test_bad_text_format(self):
         result = is_wordle_submission(f"Wordle: 545 3/6")
@@ -404,6 +408,6 @@ class TestImgGen(unittest.TestCase):
 if __name__ == '__main__':
     #unittest.main()
     suite = unittest.TestSuite()
-    suite.addTest(TestValidation('test_submission_scores'))
+    suite.addTest(TestValidation('test_is_todays_wordle_number'))
 
     unittest.TextTestRunner().run(suite)

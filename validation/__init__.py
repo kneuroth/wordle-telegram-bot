@@ -2,4 +2,4 @@
 from .update_validation import is_valid_score_submission
 
 # For testing only
-from .update_validation import is_wordle_submission
+from .update_validation import is_wordle_submission, is_todays_wordle_number
